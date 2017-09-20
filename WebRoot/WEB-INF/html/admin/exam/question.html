@@ -1,0 +1,59 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'测试平台',p2:'试卷管理'}) {}
+<div class="rightinfo">
+    <form action="${base}/admin/exam/question/${examId!}" method="post" id="queryForm">
+    <table class="tablelist" style="margin-bottom:5px;">
+    		<tr>
+    			<td>筛选：
+    			题型分类：
+    			<select id="examComboDetailId" name="examComboDetailId">
+				 	<option value="-1">---不限---</option>
+				 	@for(detail in comboDetails!) {
+				 	<option value="${detail.id!}">${detail.subject.name!} - ${detail.questionTypeName!}(共${detail.questionNum!}题)</option>
+				 	@}
+				 </select>
+			 	<input type="submit" value="  查 询   " />
+			 	<input type="button" onclick="history.back()" value=" 返 回 "></input>
+		    	</td>
+		    </tr>
+    </table>
+    </form>
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    			<th width="5%">编号</th>
+    			<th width="15%">考试分类</th>
+    			<th width="10%">课程名</th>
+    			<th width="10%">题型</th>
+    			<th width="20%">标题</th>
+    			<th width="5%">难易</th>
+    			<th width="20%">关键字</th>
+    			<th>操作</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(question in questions!){
+    		<tr>
+    			<td>${question.id!}</td>
+    			<td>${question.typeName!}</td>
+    			<td>${question.subject.name!}</td>
+    			<td>${question.questionTypeName!}</td>
+    			<td>${question.title!}</td>
+    			<td>${question.diffcult!}</td>
+    			<td>${question.keywords!}</td>
+    			<td>
+    			 <a class="tablelink" href="${base}/admin/question/edit/${question.id!}">编辑</a>
+    			</td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    </table>
+    
+</div>
+
+<script>
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+	  $("#examComboDetailId").val("${examComboDetailId!}")
+});
+</script>

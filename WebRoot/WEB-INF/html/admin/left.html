@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link href="${base}/admin/css/style.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="${base}/admin/js/jquery.js"></script>
+
+<script type="text/javascript">
+$(function(){	
+	$(".menuson li").click(function(){
+		$(".menuson li.active").removeClass("active")
+		$(this).addClass("active");
+	});
+	$('.title').click(function(){
+		var $ul = $(this).next('ul');
+		$('dd').find('ul').slideUp();
+		if($ul.is(':visible')){
+			$(this).next('ul').slideUp();
+		}else{
+			$(this).next('ul').slideDown();
+		}
+	});
+})	
+</script>
+</head>
+<body style="background:#f0f9fd;">
+	<div class="lefttop">
+	<span></span><a href="${base}/admin/welcome" target="rightFrame" style="color:white;font-weight:bold;text-align:center">回到首页</a>
+	</div>
+    <dl class="leftmenu">
+    @for(entry in session.loginOperator.role.menus) {
+    @ var parentRight = entry.key;
+    @ var childs = entry.value;
+    <dd>
+    <div class="title">
+    <span><img src="${base}/admin/images/leftico01.png" /></span>${parentRight.text}</div>
+    <ul class="menuson">
+    	@for(childRight in childs) {
+        <li><cite></cite><a href="${base}${childRight.url}" target="rightFrame">${childRight.text}</a><i></i></li>
+        @}
+    </ul>    
+    </dd>
+    @}  
+    </dl>
+</body>
+</html>

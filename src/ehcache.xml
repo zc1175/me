@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache updateCheck="false" monitoring="autodetect"
+	dynamicConfig="false">
+
+	<diskStore path="java.io.tmpdir" />
+
+	<defaultCache maxEntriesLocalHeap="200000" eternal="true"
+		overflowToDisk="true" />
+
+
+</ehcache>

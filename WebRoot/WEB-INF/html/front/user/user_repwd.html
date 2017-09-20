@@ -1,0 +1,60 @@
+	@ include("/front/user/_left.html",{"item":"repwd"}) {}
+
+	<div class="col-md-9 col-sm-9 col-xs-8">
+		
+		<div class="alert alert-warning alert-dismissible" id="errMsgDiv" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <span class="glyphicon glyphicon-warning-sign"></span>
+		  <div id="errMsg" class="pull-left"></div>
+		</div>
+		
+		<form action="${base}/user/center/doRepwd" id="pwdForm" method="post" onsubmit="return checkForm()">
+			
+			 <div class="form-group">
+			    <label for="oldPwd">原密码</label>
+			    <input name="oldPwd" type="password" class="form-control" id="oldPwd" placeholder="输入原密码">
+			  </div>
+			  <div class="form-group">
+			    <label for="pwd">新密码</label>
+			    <input name="pwd" type="password" class="form-control" id="pwd" placeholder="输入新密码">
+			  </div>
+			  <div class="form-group">
+			    <label for="pwd2">再次输入新密码</label>
+			    <input type="password" class="form-control" id="pwd2" placeholder="再次输入新密码">
+			  </div>
+		  	 <button type="submit" class="btn btn-default">提交修改</button>
+		</form>
+	
+	</div>
+
+</div>
+<script>
+	$(function(){
+		$("#errMsgDiv").hide();
+		var errMsg = "${errMsg!}";
+		if(errMsg.length > 0) {
+			$("#errMsg").text(errMsg);
+			$("#errMsgDiv").show();
+		}
+	});
+	function checkForm() {
+		if($("#oldPwd").val().length == 0) {
+			$("#errMsg").text("原始密码不能为空，请检查！");
+			$("#errMsgDiv").show();
+			return false;
+		}
+		if($("#pwd").val().length == 0 || $("#pwd2").val().length == 0) {
+			$("#errMsg").text("新密码不能为空，请检查！");
+			$("#errMsgDiv").show();
+			return false;
+		}
+		if($("#pwd").val() != $("#pwd2").val()) {
+			$("#errMsg").text("两次输入密码不一致，请检查！");
+			$("#errMsgDiv").show();
+			return false;
+		}
+		return true;
+	}
+</script>
+
+@ include("/front/common/_footer.html",{}) {}

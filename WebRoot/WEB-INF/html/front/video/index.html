@@ -1,0 +1,210 @@
+@ include("/front/common/_header.html",{"nav":"video"}) {}
+<style>
+body { background:#f6f6f6;}
+.type-item { padding:0px 10px;color:#888;}
+.type-item-level2 { padding-left:30px;}
+.type-item-level3 { padding-left:45px;border-top-left-radius:0px;border-top-right-radius:0px;}
+.list-active { background-color:#f4f4f4;}
+.type-children { display:none;} 
+.video-collection-list { width:100%;clear:both; }
+.video-collection-list dl { float:left; width:220px; text-align:center; border:1px solid #f0f0f0;margin-right:20px;}
+</style>
+<div style="height:15px"></div>
+<!-- 文档分类 -->
+<div class="container">
+	 <!-- 当前位置 -->
+	  <div style="margin:0px 0px 10px 0px;">
+	  当前位置：<a href="${base}/video">视频</a> 
+	  @if(null != pparent!) {
+	  &gt; <a href="javascript:s('typeId','${pparent.id!}')">${pparent.name!}</a>
+	  @}
+	  @if(null != parent!) {
+	  &gt; <a href="javascript:s('typeId','${parent.id!}')">${parent.name!}</a>
+	  @}
+	  @if(null != docType!) {
+	  &gt; <a href="javascript:s('typeId','${docType.id!}')">${docType.name!}</a>
+	  @}
+	  </div>
+	
+
+	<div class="row">
+		<!-- 分类导航 -->
+	  	<div class="col-md-3 col-sm-3 hidden-xs">
+			<div class="cate-list">
+      			<a href="javascript:s('typeId','-1')" class="list-group-item" style="background-color:#f0f0f0;">
+      			<label>全部视频</label>
+      			</a>
+      			@for(dt in typeList!){
+      			<a dtype="typeId" val='${dt.id!}' href="javascript:void(0)" class="list-group-item">
+      			@if(dt.childNum!0 == 0) {
+      			<span class="glyphicon glyphicon-list-alt"></span>
+      			@}
+      			@if((dt.childNum!0 > 0 && dt.id == parentId!) || (dt.childNum!0 >0 && dt.id == ppId!)){
+      			<span class="glyphicon glyphicon-minus" onclick="doSwitch(this,'${dt.id!}')"></span>
+      			@}else if(dt.childNum!0 > 0){
+      			<span class="glyphicon glyphicon-plus" onclick="doSwitch(this,'${dt.id!}')"></span>
+      			@}
+      			<label  style="cursor:pointer" onclick="javascript:s('typeId','${dt.id!}')">${dt.name!} (${dt.videoNum!0})</label>
+      			</a>
+      			<div id="type-child-${dt.id!}" class="type-children">
+      			@for(child in dt.child!) {
+      			<span class="list-group-item" style="display:none"></span>
+      			<a dtype="typeId" val="${child.id!}"  href="javascript:void(0)" class="list-group-item type-item-level2">
+      			
+      			@if(child.childNum!0 ==0 ) {
+      			<span class="glyphicon glyphicon-list-alt"></span>
+      			@}
+      			@if(child.childNum!0 > 0 && parentId! != child.id ) {
+      			<span class="glyphicon glyphicon-plus" onclick="doSwitch(this,'${child.id!}')"></span>
+      			@}else if(child.childNum!0 > 0){
+      			<span class="glyphicon glyphicon-minus" onclick="doSwitch(this,'${child.id!}')"></span>
+      			@}
+      			<label style="cursor:pointer" onclick="javascript:s('typeId','${child.id!}')">${child.name!} (${child.videoNum!0})</label>
+      			</a>
+      			<span class="list-group-item" style="display:none"></span>
+      			<div id="type-child-${child.id!}" class="type-children">
+      			@for(gchild in child.child!) {
+      			<span class="list-group-item" style="display:none"></span>
+      			<a dtype="typeId" val="${gchild.id!}" href="javascript:s('typeId','${gchild.id!}')" class="list-group-item type-item-level3">
+      			<label>${gchild.name!} (${gchild.docNum!0})</label>
+      			</a>
+      			<span class="list-group-item" style="display:none"></span>
+      			@}
+      			</div>
+      			@}
+      			</div>
+      			@}
+      		</div>
+	  	</div>
+	    <!-- //分类导航 -->
+	    <div class="col-md-9 col-sm-9 col-xs-12">
+	    
+	    	@if(videoCollectionPage.list.~size > 0) {
+	    
+	    	<!-- 视频集 -->
+	    	<div class="video-collection-list">
+	    		<h4 class="text-primary"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
+	    		<a href="${base}/videoCollection">视频集</a>
+	    		</h4>
+	    		<div>
+	   				@for(videoCollection in videoCollectionPage.list!){
+					<dl>
+						<dt>
+						<a href="${base}/videoCollection/view?id=${videoCollection.id!}"  target="_blank" class="thumbnail">
+						<img src="${httpPath}/${videoCollection.firstVideo.videoFile.capture!}" class="img-responsive"/>
+						</a>
+						</dt>
+						<dd>
+						<a href="${base}/videoCollection/view?id=${videoCollection.id!}" target="_blank">
+						${videoCollection.name!}</a><br/>(共${videoCollection.videoNum!0}个视频)</dd>
+					</dl>
+					@}	    		
+	    		</div>
+	    	</div>
+	    	@}	    	
+	    	
+	    	<div class="clearfix"></div>
+	    	
+	    	<!-- 
+	    
+	  		<h4 class="text-primary"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>视频</h4>
+	    	
+	    	<div style="background-color:#f0f0f0;border:1px solid #e0e0e0;padding:5px;margin-bottom:5px;">
+			<label><small>时间&nbsp;</small></label>
+			<button dtype="time" val="-1" type="button" class="btn btn-sm btn-link" onclick="s('time',-1)">全部 </button>
+			<button dtype="time" val="3" type="button" class="btn btn-sm btn-link" onclick="s('time',3)">近三天 </button>
+			<button dtype="time" val="7" type="button" class="btn btn-sm btn-link" onclick="s('time',7)">近一周 </button>
+			<button dtype="time" val="31" type="button" class="btn btn-sm btn-link" onclick="s('time',31)">近一个月 </button>
+			<label><small>排序&nbsp;</small></label>
+			<button dtype="orderBy" val="-1" type="button" class="btn btn-sm btn-link" onclick="s('orderBy',-1)">默认</button>
+			<button dtype="orderBy" val="clickNum" type="button" onclick="s('orderBy','clickNum')" class="btn btn-sm btn-link">点击量</button>
+			<button dtype="orderBy" val="commentNum" type="button" onclick="s('orderBy','commentNum')" class="btn btn-sm btn-link">评论数</button>
+			<button dtype="orderBy" val="collectNum" type="button" onclick="s('orderBy','collectNum')" class="btn btn-sm btn-link">收藏量</button>
+			</div>
+			
+			@if(videoPage.totalRow == 0) {
+			<div class="text-center">当前栏目暂无视频</div>
+			@}
+	
+	
+	      	@for(video in videoPage.list!) {
+	        <div class="col-md-4 col-sm-5 col-xs-12" style="margin-top:15px;">
+	          <a href="${base}/video/view/${video.pid!}"  target="_blank" class="thumbnail">
+	     		 <img src="${httpPath}/${video.videoFile.capture!}" alt="${video.title!}" class="img-responsive">
+	   		  </a>
+	   		   <div class="words-nowrap text-center" style="height:40px;"><a href="${base}/video/view/${video.pid!}"  target="_blank"><h4>${video.title!}</h4></a></div>
+	        </div>
+	        @}
+      
+      		<div class="row" style="clear:both;margin-left:0px;margin-top:10px;text-align:center;margin:0px auto;">
+      		 @ include("/common/_paginate_.html",
+  			 @ {"currentPage":videoPage.pageNumber,"totalPage":videoPage.totalPage}) {}
+      		</div>
+      		
+      		 -->
+	</div>      		
+</div>    
+</div>
+
+
+<form action="${base}/video" method="get" id="videoForm">
+<input type="hidden" name="typeId" id="typeId" value="${typeId!}"/>
+<input type="hidden" name="time" id="time" value="${time!}"/>
+<input type="hidden" name="orderBy" id="orderBy" value="${orderBy!}" />
+<input type="hidden" name="pageNo" id="pageNo" value="1"/>
+
+</form>
+
+<script>
+	function doSwitch(o,tid) {
+		var isVisible = $("#type-child-"+tid).css("display");
+		if(isVisible == "" || isVisible == "block") {
+			$(o).removeClass('glyphicon-minus').addClass("glyphicon-plus");
+			$("#type-child-"+tid).hide();
+		}else{
+			$(o).removeClass('glyphicon-plus').addClass("glyphicon-minus");
+			$("#type-child-"+tid).show();
+		}
+	}
+	function s(formId,val) {
+		$("#"+formId).val(val);
+		$("#videoForm").submit();
+	}
+	function go2Page(p) {
+		$("#pageNo").val(p);
+		$("#videoForm").submit();
+	}
+	$(document).ready(function(){
+		var typeId = "${typeId!}";
+		var time = "${time!}"
+		var orderBy = "${orderBy!}"
+		$("[dtype='typeId']").each(function(index,item){
+			if($(item).attr("val")==typeId) {
+				$(item).addClass("list-active");
+			}else{
+				$(item).removeClass("btn-info");
+			}
+		});
+		$("[dtype='time']").each(function(index,item){
+			if($(item).attr("val")==time) {
+				$(item).addClass("btn-default");
+			}else{
+				$(item).removeClass("btn-default");
+			}
+		});
+		$("[dtype='orderBy']").each(function(index,item){
+			if($(item).attr("val")==orderBy) {
+				$(item).addClass("btn-default");
+			}else{
+				$(item).removeClass("btn-default");
+			}
+		});
+		
+		$("#type-child-${parentId!'-1'}").show();
+		$("#type-child-${ppId!'-1'}").show();
+	});
+</script>
+
+
+
+@ include("/front/common/_footer.html",{}) {}

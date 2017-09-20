@@ -1,0 +1,107 @@
+@ include("/front/common/_header.html",{"nav":"video"}) {}
+<style>
+body { background:#f6f6f6;}
+.type-item { padding:0px 10px;color:#888;}
+.type-item-level2 { padding-left:30px;}
+.type-item-level3 { padding-left:45px;border-top-left-radius:0px;border-top-right-radius:0px;}
+.list-active { background-color:#f4f4f4;}
+.type-children { display:none;} 
+.video-collection-list { width:100%;clear:both; }
+.video-collection-list dl { float:left; width:170px; text-align:center; border:1px solid #f0f0f0;}
+</style>
+<div style="height:15px"></div>
+<!-- 文档分类 -->
+<div class="container">
+	<div class="row">
+		
+		<!-- 分类导航 -->
+	  	<div class="col-md-3 col-sm-3 hidden-xs">
+			<div class="cate-list">
+      			<a href="javascript:s('typeId','-1')" class="list-group-item" style="background-color:#f0f0f0;">
+      			<label>全部视频</label>
+      			</a>
+      			@for(dt in typeList!){
+      			<a dtype="typeId" val='${dt.id!}' href="javascript:void(0)" class="list-group-item">
+      			@if(dt.childNum!0 == 0) {
+      			<span class="glyphicon glyphicon-list-alt"></span>
+      			@}
+      			@if((dt.childNum!0 > 0 && dt.id == parentId!) || (dt.childNum!0 >0 && dt.id == ppId!)){
+      			<span class="glyphicon glyphicon-minus" onclick="doSwitch(this,'${dt.id!}')"></span>
+      			@}else if(dt.childNum!0 > 0){
+      			<span class="glyphicon glyphicon-plus" onclick="doSwitch(this,'${dt.id!}')"></span>
+      			@}
+      			<label  style="cursor:pointer" onclick="javascript:s('typeId','${dt.id!}')">${dt.name!} (${dt.videoNum!0})</label>
+      			</a>
+      			<div id="type-child-${dt.id!}" class="type-children">
+      			@for(child in dt.child!) {
+      			<span class="list-group-item" style="display:none"></span>
+      			<a dtype="typeId" val="${child.id!}"  href="javascript:void(0)" class="list-group-item type-item-level2">
+      			
+      			@if(child.childNum!0 ==0 ) {
+      			<span class="glyphicon glyphicon-list-alt"></span>
+      			@}
+      			@if(child.childNum!0 > 0 && parentId! != child.id ) {
+      			<span class="glyphicon glyphicon-plus" onclick="doSwitch(this,'${child.id!}')"></span>
+      			@}else if(child.childNum!0 > 0){
+      			<span class="glyphicon glyphicon-minus" onclick="doSwitch(this,'${child.id!}')"></span>
+      			@}
+      			<label style="cursor:pointer" onclick="javascript:s('typeId','${child.id!}')">${child.name!} (${child.videoNum!0})</label>
+      			</a>
+      			<span class="list-group-item" style="display:none"></span>
+      			<div id="type-child-${child.id!}" class="type-children">
+      			@for(gchild in child.child!) {
+      			<span class="list-group-item" style="display:none"></span>
+      			<a dtype="typeId" val="${gchild.id!}" href="javascript:s('typeId','${gchild.id!}')" class="list-group-item type-item-level3">
+      			<label>${gchild.name!} (${gchild.docNum!0})</label>
+      			</a>
+      			<span class="list-group-item" style="display:none"></span>
+      			@}
+      			</div>
+      			@}
+      			</div>
+      			@}
+      		</div>
+	  	</div>
+	    <!-- //分类导航 -->
+	
+	    <div class="col-md-9 col-sm-9 col-xs-12">
+	    
+	    	<!-- 视频集 -->
+	    	<div class="video-collection-list">
+	    		<h4 class="text-primary"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
+	    		${viewCollection.name!}</h4>
+	    		
+	    		@for(video in page.list!) {
+		        <div class="col-md-4 col-sm-5 col-xs-12" style="margin-top:15px;">
+		          <a href="${base}/video/view/${video.pid!}"  class="thumbnail">
+		     		 <img src="${httpPath}/${video.videoFile.capture!}" alt="${video.title!}" class="img-responsive">
+		   		  </a>
+		   		   <div class="words-nowrap text-center" style="height:40px;"><a href="${base}/video/view/${video.pid!}" ><h4>${video.title!}</h4></a></div>
+		        </div>
+		        @}
+	    	</div>
+	    	
+	    	<div class="row" style="clear:both;margin-left:0px;margin-top:10px;text-align:center;margin:0px auto;">
+      		 @ include("/common/_paginate_.html",
+  			 @ {"currentPage":page.pageNumber!,"totalPage":page.totalPage!}) {}
+   		</div>
+   		
+		</div>  
+		
+    
+	</div>  
+	
+	
+      		    		
+  
+</div>
+
+<script>
+	function go2Page(p){
+		location.href='${base}/front/videoCollection/view?page='+p+'&id=${videoCollection.id!}';
+	}
+</script>
+
+
+
+@ include("/front/common/_footer.html",{}) {}

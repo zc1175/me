@@ -1,0 +1,55 @@
+<style>
+select { opacity:1; border:1px solid #ccc; width:140px;height:25px;}
+</style>
+<div class="formtitle"><span>视频分类管理</span></div>
+<form action="${base}/admin/videoType/save" method="post" name="videoTypeForm" id="videoTypeForm">
+<input type="hidden" name="videoType.id" value="${videoType.id!}">
+<ul class="forminfo">
+	<li>
+		<label>栏目名称</label>
+		<input class="dfinput" type="text" name="videoType.name" value="${videoType.name!}" datatype="*" nullmsg="不能为空"/>
+	</li>
+	<li>
+		<label>上级栏目</label>
+		<select name="videoType.parentId" id="parentId">
+			<option value="-1"> -- 顶层栏目 --- </option>
+			@for(video in parentList!) {
+			<option value="${video.id!}">${video.name!}</option>
+			@for(ch in video.child!) {
+			 <option value="${ch.id!}">&nbsp; |- ${ch.name!} </option>
+			@}
+			@}
+		</select>
+	</li>
+	<li>
+		<label>显示顺序</label>
+		<input type="text" name="videoType.rank" value="${videoType.rank!}"  class="dfinput" />(可为空，整数数字,1,2,3,4等)
+	</li>
+	<li>
+		<label>状态</label>
+			<select class="dfinput" name="videoType.status" id="status" datatype="*">
+				<option value="1">启用</option>
+				<option value="0">禁用</option>
+			</select>
+	</li>
+	<li>
+		<label>管理员</label>
+			@for(op in managerList!){
+			<input type="checkbox" value="${op.id!}" name="managerId" ${op.checked!false == true?'checked':''} />${op.name!}
+			@} 
+	</li>
+	<li>
+    <label>&nbsp;</label>
+	<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+	<input type="submit" value="保存"  class="btn btn-info"/>
+	</li>
+</ul>
+</form>
+<script>
+
+$(function(){
+	$("#status").val("${videoType.status!}");
+	$("#parentId").val("${videoType.parentId!}");
+	
+});
+</script>

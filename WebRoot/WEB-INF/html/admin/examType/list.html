@@ -1,0 +1,43 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'测试管理',p2:'项目分类'}) {}
+<div class="rightinfo">
+	 <div class="tools">
+    	<ul class="toolbar">
+             <li class="click"><span><img src="${base}/admin/images/t01.png" /></span><a href="${base}/admin/examType/add">添加考试项目</a></li>
+        </ul>
+    </div>
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    			<th>编号</th>
+    			<th width="30%">名称</th>
+    			<th width="30%">显示顺序(从小到大)</th>
+    			<th>操作</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(menu in examTypeList!){
+    		<tr>
+    			<td>${menu.id!}</td>
+    			<td>${menu.name!}</td>
+    			<td>${menu.rank!}</td>
+    			<td>
+    			 <a class="tablelink" href="${base}/admin/examType/edit/${menu.id!}">编辑</a>
+                 <a class="tablelink" href="javascript:void(0)" onclick="del(${menu.id!})">删除</a>
+                 <a class="tablelink" href="${base}/admin/examType/child/${menu.id!}">管理子项目</a>
+    			</td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    </table>
+</div>
+<script>
+function del(id) {
+	if(confirm("确认要删除吗？此操作不可恢复！")) {
+		location.href='${base}/admin/examType/delete/' + id;
+	}
+}
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+});
+</script>

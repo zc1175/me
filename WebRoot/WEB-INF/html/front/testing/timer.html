@@ -1,0 +1,45 @@
+<script src="${base}/front/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+<style>
+* { font-size:24px; font-weight:bold;}
+</style>
+<div class="area">
+<p align="center" id="loading" style="display:block">准备中...</p>
+<p align="center" id="timerTip" style="display:none">离考试开始，还有：<span id="timer"></span></p>
+<p align="center" id="createTip" style="display:none">正在读取试卷，请稍候...</p>
+
+</div>
+
+<script>
+var timeLeft = parseInt("${session.timeLeft!0}");
+var pid = "${session.curExamPid!}";
+function startTimer() {
+	$("#loading").hide();
+	if(timeLeft <=0 ) {
+		clearInterval(timer);
+		$("#timerTip").hide();
+		createExam();
+	}else{
+		$("#timerTip").show();
+		var s = "";
+		if(timeLeft > 60) {
+			s+=parseInt(timeLeft/60)+"分";
+		}
+		s+=(timeLeft%60)+"秒";
+		$("#timer").text(s);
+		timeLeft--;
+	}
+}
+function createExam() {
+	$("#createTip").show();
+	$.getJSON("${base}/testing/createExam/"+pid,{},function(ret){
+		if("success" == ret.result) {
+			$("#createTip").text("试卷读取完成，即将开始考试!");
+			setTimeout(function(){ location.replace('${base}/testing/exam/'+pid+"?t="+new Date().getTime()); },1500);
+		}
+	});
+}
+$(function(){
+	timer= setInterval(startTimer,1000);
+});
+</script>
+

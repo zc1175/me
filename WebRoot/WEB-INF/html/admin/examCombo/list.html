@@ -1,0 +1,76 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'测试平台',p2:'试卷组合管理'}) {}
+<div class="rightinfo">
+	 <div class="tools">
+    	<ul class="toolbar">
+             <li class="click"><span><img src="images/t01.png" /></span><a href="${base}/admin/examCombo/add">添加试卷组合</a></li>
+        </ul>
+    </div>
+    
+    <form action="${base}/admin/examCombo" method="post" id="queryForm">
+    <table class="tablelist" style="margin-bottom:5px;">
+    		<tr>
+    			<td>筛选：
+    			考试分类：
+    			<select id="selExamType" name="examCombo.examTypeId">
+				 	<option value="-1">---不限---</option>
+				 	@for(examType in examTypeList!) {
+				 	<option value="${examType.id!}">${examType.name!}</option>
+				 	@}
+				 </select>
+				<label>名称：</label>
+			 	<input type="text" name="examCombo.name" value="${examCombo.name!}"  />
+			 	<input type="submit" value="  查 询   " />
+			 	<input type="button" value="   清空查询条件    " onclick="clearQueryData()" />
+		    	</td>
+		    </tr>
+    </table>
+    </form>
+    
+    
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    			<th width="5%">编号</th>
+    			<th width="20%">考试分类</th>
+    			<th width="35%">组合名称</th>
+    			<th width="10%">总分 </th>
+    			<th width="15%">添加时间</th>
+    			<th>操作</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(examCombo in comboPage.list!){
+    		<tr>
+    			<td>${examCombo.id!}</td>
+    			<td>${examCombo.examTypeName!}</td>
+    			<td>${examCombo.name!}(共${examCombo.questionNum!}题)</td>
+    			<td>${examCombo.score!}分</td>
+    			<td>${examCombo.createTime!,"yyyy-MM-dd HH:mm"}</td>
+    			<td>
+    			 <a class="tablelink" href="${base}/admin/examCombo/edit/${examCombo.id}">编辑</a>
+                 <a class="tablelink" href="javascript:void(0)" onclick="del(${examCombo.id})">删除</a>
+    			</td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    </table>
+    
+    @ include("/common/_paginate.html",
+    @ {"currentPage":comboPage.pageNumber,"totalPage":comboPage.totalPage,"actionUrl":"/admin/examCombo/index-"}) {}
+</div>
+<script>
+function del(id) {
+	if(confirm("确认要删除吗？此操作不可恢复！")) {
+		location.href='${base}/admin/examCombo/delete/' + id;
+	}
+}
+function clearQueryData() {
+	$("#queryForm input[type=text]").val("");
+	$("#queryForm select").val("-1");
+}
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+	  $("#selExamType").val("${examCombo.examTypeId!}")
+});
+</script>

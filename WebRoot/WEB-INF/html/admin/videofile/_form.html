@@ -1,0 +1,85 @@
+<form action="${base}/admin/videofile/save" method="post" name="videofileForm" id="videofileForm" enctype="multipart/form-data">
+<input type="hidden" name="video.id" value="${video.id!}">
+<div id="usual1" class="usual"> 
+<div class="itab">
+ 	<ul> 
+       <li><a href="#" class="selected">上传视频</a></li> 
+ 	</ul>
+</div> 
+
+<div id="tab1" class="tabson">
+	<ul class="forminfo">
+	<li>
+	 	<label>文档标题</label>
+	 	<input type="text" name="video.title" class="dfinput validate[required]" style="width:300px;" value="${video.title!}"/>
+	 </li>
+	 <li>
+	 	<label>视频集</label>
+	 	<select name="video.videoCollectionId" id="videoCollectionId">
+	 		<option value="">--不指定</option>
+	 		@for(coll in videoCollectionList!){
+	 		<option value="${coll.id!}">${coll.name!}</option>
+	 		@}
+	 	</select>
+	 </li>
+	 <li>
+	 	<label>简介</label>
+	 	<input type="text" name="video.description" class="dfinput" style='width:300px' value="${video.description!}" />
+	 </li>
+	 <li>
+	 	<label>文档分类</label>
+	 	<select id="typeId" name="video.typeId" class="validate[required]">
+	 		<option value="">--请选择--</option>
+	 		@for(videoType in videoTypeList!){
+	 		<option value="${videoType.id!}">${videoType.name!}</option>
+	 		@for(child in videoType.child!) {
+	 		<option value="${child.id!}">&nbsp; &nbsp;|- ${child.name!} </option>
+	 		@for(gchild in child.child!) {
+	 		<option value="${gchild.id!}">&nbsp;&nbsp;&nbsp;&nbsp;  |- ${gchild.name!} </option>
+	 		@}
+	 		@}
+	 		@}
+	 	</select>
+	 </li>
+	 <li>
+	 	<label>要求积分</label>
+	 	<input type="text" name="video.score" value="${video.score!0}" class="dfinput validate[required,custom[number]]">
+	 </li>
+	 <li>
+	     <label>视频文件</label>
+		 <input type="file" name="file1" /> 选择文件（格式要求：asx，asf，mpg，wmv，3gp，mp4，mov，avi，flv) 
+		 <br/>
+		 <p>编辑时，若不修改文件，则不上传。</p>
+     </li>
+     <!-- 
+      <li>
+	 	<label>&nbsp;</label>
+	 	<input type="checkbox" name="isCreateFLV" value="1" />转换为FLV
+	 </li>
+	  -->
+	 </ul>
+</div>
+</div>
+<div style="clear:both">
+	<input type="button" onclick="location.href='${base}/admin/videofile'" class="btn btn-info" value="返回"></input>
+	<input type="submit" value=" 提 交 "  class="btn btn-info" id="btnSubmit"/>
+</div>
+</form>
+<script>
+//文章分类
+$(function(){
+	$("#typeId").val("${video.typeId!}");
+	$("#videoCollectionId").val('${video.videoCollectionId!}');
+	$("#videofileForm").validationEngine('attach',{
+		submitHandler:function(form){  
+            $("#btnSubmit").text("正在提交...").attr("disabled",true).addClass("btn-default");   
+            form.submit();  
+        },
+        promptPosition: 'centerRight', 
+        scroll: false 
+	});
+	
+	
+	
+});
+</script>

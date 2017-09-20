@@ -1,0 +1,142 @@
+<script type="text/javascript" src="${base}/ext/My97DatePicker/WdatePicker.js"></script>
+
+
+<div class="formtitle"><span>试卷信息</span></div>
+<form action="${base}/admin/exam/save" method="post" name="examForm" id="examForm">
+<input type="hidden" name="exam.id" value="${exam.id!}">
+
+
+<ul class="forminfo">
+    <li>
+    <label>&nbsp;</label>
+	<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+	<input type="submit" value="保存"  class="btn btn-info"/>
+	
+	</li>
+	<li>
+		<label>试卷名称</label>
+		<input class="dfinput validate[required]" type="text" name="exam.name" style="width:300px;" value="${exam.name!}"/>
+	</li>
+	
+	<li>
+		<label>试卷组合</label>
+		<select name="exam.examTypeId" id="examTypeId" class="validate[required]">
+			<option value="">---请选择---</option>
+			@for(examType in examTypeList!) {
+			<option value="${examType.id!}">${examType.name!}</option>
+			@}
+		</select>
+		<select name="exam.comboId" id="comboId">
+			<option value="-1">--请选择考试分类---</option>
+		</select>
+	</li>
+	
+	<li>
+		<label>试卷类型</label>
+		<select name="exam.answerType" id="answerType" onchange="selectAnswerType()" class="validate[required]">
+			<option value=""> -- 请选择试卷类型 -- </option>
+			<option value="testing">模考（计时，不可重复答题）</option>
+			<option value="practice">练习（不计时，可重复答题）</option>
+		</select>
+	</li>
+	
+	<li>
+		<label>试卷生成方式</label>
+		<select name="exam.createType" id="createType" class="validate[required]">
+			<option value=""> -- 请选择试卷生成方式 -- </option>
+			<option value="none">实时随机抽题，每人题目不同</option>
+			<option value="createsame">预先抽题，每人题目相同，顺序相同</option>
+			<option value="creatediff">预先抽题，每人题目相同，顺序不同</option>
+		</select>
+	</li>
+	
+	
+	<li>
+		<label>开考方式</label>
+		<select name="exam.syncType" id="sync" answerType="testing" class="validate[required]">
+			<option value="">--请选择--</option>
+			<option value="同步">同步（所有考生同一时间开考和结束）</option>
+			<option value="异步 ">异步（考生可在规定时间内任意时间答题）</option>
+		</select>
+	</li>
+	<li>
+		<label>考试时长</label>
+		<input type="text" name="exam.timeLength" value="${exam.timeLength!}" answerType="testing" class="validate[required]"/>(分钟)
+	</li>
+	<!-- <li>
+		<label>多次参考</label>
+		<select name="exam.repeat">
+			<option value="0">仅只一次（提交后不可再次参加）</option>
+			<option value="1">不限次数（提交后可多次参加</option>
+		</select>
+	</li> -->
+	<li>
+		<label>可答题时间</label>
+		<input type="text" value="${exam.startTime!}" name="exam.startTime" id="startTime"  style="width:180px" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate validate[required]" /> -- <input type="text" style="width:180px" name="exam.endTime" id="endTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate validate[required]" value="${exam.endTime!}"/>
+		（时间到后自动下线）
+	</li>
+	
+	<li>
+		<label>发布状态</label>
+			<select name="exam.published" id="published" datatype="*" class="validate[required]">
+				<option value="0">未发布</option>
+				<option value="1">已发布（前台可见，考生可在规定时间内答题 ）</option>
+			</select>
+	</li>
+</li>
+</ul>
+</form>
+<script>
+function selectAnswerType() {
+	if($("#answerType").val()=='testing') {
+		$("[answerType='testing']").each(function(index,item){ $(item).parent().show();});
+		$("[answerType='practice']").each(function(index,item){ $(item).parent().hide();});
+	}else{
+		$("[answerType='testing']").each(function(index,item){ $(item).parent().hide();});
+		$("[answerType='practice']").each(function(index,item){ $(item).parent().show();});
+	}
+}
+function loadComboInfo(examTypeId,comboId) {
+        if(examTypeId == undefined || examTypeId == "") examTypeId = "-1";
+        if(comboId == undefined || comboId == "") comboId = "-1";
+        
+		var url = "${base}/admin/examCombo/listJson?t=" + new Date().getTime();
+		var param = { "examCombo.examTypeId" : examTypeId };
+		$.getJSON(url,param,function(ret){
+			$("#comboId")[0].options.length=1;
+			if(ret.data) {
+				$.each(ret.data,function(index,item){
+					var op = $("<option>").val(item.id).text(item.name);
+					if(item.id == comboId) op.attr("selected",true);
+					$("#comboId").append(op);
+				});
+			}
+		});
+}
+
+$(function(){
+	$("#examForm").validationEngine('attach',{
+		submitHandler:function(form){  
+            $("#btnSubmit").text("正在提交...").attr("disabled",true).addClass("btn-default");   
+            form.submit();  
+        },
+        promptPosition: 'centerRight', 
+        scroll: false 
+	});
+	
+	$("label").css("width","120px");
+	$("#examTypeId").val("${exam.examTypeId!}");
+	$("#sync").val("${exam.syncType!}");
+	$("#published").val("${exam.published!}"=="true"?"1":"0");
+	$("#answerType").val("${exam.answerType!}");
+	$("#createType").val("${exam.createType!}");
+	loadComboInfo("${exam.examTypeId!}","${exam.comboId!}")
+	
+	selectAnswerType();
+		
+	$("#examTypeId").change(function(){
+		loadComboInfo($("#examTypeId").val(),-1);
+	});
+	
+});
+</script>

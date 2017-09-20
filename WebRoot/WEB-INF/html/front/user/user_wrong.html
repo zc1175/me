@@ -1,0 +1,46 @@
+
+	@ include("/front/user/_left.html",{"item":"question"}) {}
+
+	<div class="col-md-9 col-sm-9 col-xs-8">
+	
+		<div>
+		<!-- 题型：<select id="questionType"></select> -->
+		<button class="btn btn-default btn-xs" onclick="export2excel()">导出为EXCEL</button>
+		</div>
+	
+		<table class="table table-striped">
+			<thead>
+				<th width="10%">题型</th>
+				<th width="50%">题目</th>
+				<th width="40%">答案</th>
+			</thead>
+			<tbody>
+			@for(ua in uadPage.list) {
+			@if(null != ua.question!){
+			<tr>
+				<td>${ua.questionType.name!}</td>
+				<td width="50%">${ua.question.title!}</td>
+				<td width="40%">
+				 ${ua.question.correctAnswer!}
+				</td>
+			</tr>
+			@}
+			@}
+			</tbody>
+		</table>
+		
+		@ include("/common/_paginate_.html",
+  		@ {"currentPage":uadPage.pageNumber,"totalPage":uadPage.totalPage}) {}
+  			 
+	</div>
+
+</div>
+<script>
+function go2Page(p) {
+	location.href="?p="+p;
+}
+function export2excel() {
+	window.open("${base}/user/exportExcel");
+}
+</script>
+@ include("/front/common/_footer.html",{}) {}

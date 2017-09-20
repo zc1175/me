@@ -1,0 +1,113 @@
+<form action="${base}/admin/docfile/save" method="post" name="docForm" id="docForm" enctype="multipart/form-data">
+<input type="hidden" name="doc.id" value="${doc.id!}">
+<div id="usual1" class="usual"> 
+<div class="itab">
+ 	<ul> 
+       <li><a href="#" class="selected">上传文档</a></li> 
+ 	</ul>
+</div> 
+
+<div id="tab1" class="tabson">
+	<ul class="forminfo">
+	 <li>
+	 	<label>文档标题</label>
+	 	<input type="text" name="doc.title" class="dfinput validate[required]" style="width:300px;" value="${doc.title!}"/>
+	 </li>
+	 <li>
+	 	<label>关键字</label>
+	 	<input type="text" name="keywords" class="dfinput" style="width:300px;" value="${keywords!}"/>(多个关键字之间使用“空格”分隔)
+	 </li>
+	 <li>
+	 	<label>简介</label>
+	 	<input type="text" name="doc.description" class="dfinput" style='width:300px' value="${doc.description!}" />
+	 </li>
+	 <li>
+	 	<label>科目</label>
+	 	<select name="doc.examId" id="examTypeId" onchange="getSubjectList()" class="validate[required]">
+	 		<option value="">---请选择考试---</option>
+	 		@for(examType in examTypeList) {
+	 		<option value="${examType.id!}">${examType.name!}</option>
+	 		@for(child in examType.children){
+    		<option value="${child.id!}">&nbsp;&nbsp; |-${child.name!}</option>
+    		@for(gchild in child.children){
+    		<option value="${gchild.id!}">&nbsp;&nbsp;&nbsp;&nbsp; |-${gchild.name!}</option>
+    		@}
+    		@}
+	 		@}
+	 	</select>
+	 	<select name="doc.subjectId" id="subjectId" >
+	 	   <option value="">--请选择--</option>
+	 	</select>
+	 </li>
+	 <li>
+	 	<label>文档分类</label>
+	 	<select id="typeId" name="doc.typeId" class="validate[required]">
+	 		<option value="">--请选择--</option>
+	 		@for(docType in docTypeList!){
+	 		<option value="${docType.id!}">${docType.name!}</option>
+	 		@for(child in docType.child!) {
+	 		<option value="${child.id!}">&nbsp;&nbsp;|-${child.name!}</option>
+	 		@for(gchild in child.child!) {
+	 		<option value="${gchild.id!}">&nbsp;&nbsp;&nbsp;&nbsp;|-${gchild.name!}</option>
+	 		@}
+	 		@}
+	 		@}
+	 	</select>
+	 </li>
+	 <li>
+	 	<label>要求积分</label>
+	 	<input type="text" name="doc.score" value="${doc.score!0}" class="dfinput validate[required,custom[number]]">
+	 </li>
+	 <li>
+	     <label>文件</label>
+		 <input type="file" name="file1" />（格式要求：xls,xlsx,doc,docx,ppt,pptx,pdf)
+		 <br/>
+		 <p>编辑时，若不修改文件，则不上传。</p> 
+     </li>
+	 <li>
+	 	<label>&nbsp;</label>
+	 	<input type="checkbox" checked name="isCreateSwf" value="1" />生成SWF
+	 </li>
+	 </ul>
+</div>
+</div>
+<div style="clear:both">
+	<input type="button" onclick="location.href='${base}/admin/docfile'" class="btn btn-info" value="返回"></input>
+	<input type="submit" value=" 提 交 "  class="btn btn-info" id="btnSubmit"/>
+</div>
+</form>
+<script>
+function getSubjectList() {
+	var examTypeId = $("#examTypeId").val();
+	$("#subjectId").empty();
+	$("#subjectId").append("<option value=''>--请选择--</option>");
+	if(examTypeId != -1) {
+		$.getJSON('${base}/admin/subject/listJson',{"examTypeId":examTypeId},function(ret){
+			$.each(ret.data,function(index,subject){
+				var op = $("<option value='"+subject.id+"'>"+subject.name+"</option>");
+				$("#subjectId").append(op);
+			});
+		});
+	}
+}
+//文章分类
+$(function(){
+	$("#docForm").validationEngine('attach',{
+		submitHandler:function(form){  
+            $("#btnSubmit").text("正在提交...").attr("disabled",true).addClass("btn-default");   
+            form.submit();  
+        },
+        promptPosition: 'centerRight', 
+        scroll: false 
+	});
+	var examTypeId = "${doc.examId!}";
+	var subjectId = "${doc.subjectId!}";
+	$("#examTypeId").val(examTypeId);
+	//setTimeout(function(){ $("#subjectId").val(subjectId)} , 1000);
+	$("#typeId").val("${doc.typeId!}");
+	setTimeout(function(){ $("#typeId").val("${doc.typeId!}") },1500);
+	
+	
+	
+});
+</script>

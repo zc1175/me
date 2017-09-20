@@ -1,0 +1,58 @@
+<div class="formtitle">
+	<span>数据字典</span>
+</div>
+<form action="${base}/admin/dict/save" method="post" name="dictForm" id="dictForm">
+	<input type="hidden" name="dict.id" value="${dict.id!}">
+	<ul class="forminfo">
+	
+		<li>
+		    <label>类型</label> 
+		    <input type="text" class="dfinput" name="dict.type" value="${dict.type!}" datatype="*" />
+		</li>
+
+		<li>
+		    <label>数据文本</label> 
+		    <input type="text" class="dfinput" name="dict.item" value="${dict.item!}" datatype="*" />
+		</li>
+
+		<li>
+		    <label>数据值</label> 
+		    @if(strutil.length(dict.value!'')>10) {
+		    <textarea name="dict.value" cols="50" rows="6">${dict.value!}</textarea>
+		    @}else{
+		    <input type="text" class="dfinput" name="dict.value" value="${dict.value!}" datatype="*" />
+			@}
+		</li>
+		
+		<li>
+			<label>描述</label>
+			<input type="text" class="dfinput" name="dict.description" value="${dict.description!}" />
+		</li>
+
+		<li>
+			<label>状态</label>
+			<select name="dict.enabled" id="enabled">
+				<option value="1">启用</option>
+				<option value="0">禁用</option>
+			</select>
+		</li>
+
+		<li>
+			<input type="button" value="返回" class="btn" onclick="history.back()" /> 
+			<input type="submit" value="保存" class="btn btn-info" />
+		</li>
+		
+		
+	</ul>
+</form>
+<script>
+	$(function() {
+		$("#dictForm").Validform({
+			tiptype : 3
+		});
+		$("#enabled").val("${dict.enabled!}");
+		$("select").uedSelect({
+			width : 160
+		});
+	});
+</script>

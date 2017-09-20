@@ -1,0 +1,67 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'内容管理',p2:'栏目管理',p3:'子栏目管理'}) {}
+<div class="rightinfo">
+	 <div class="tools">
+    	<ul class="toolbar">
+             <li class="click">
+             <span><img src="${base}/admin/images/t01.png" /></span><a href="${base}/admin/newsCategory/add/${category.id!}">添加子栏目</a>
+             </li>
+              <input type="button" onclick="location.href='${base}/admin/newsCategory'" class="btn btn-info" value="返回"></input>
+        </ul>
+    </div>
+    <div class="formtitle" style="margin-bottom:0px;"><span>"${category.name!}"的子栏目列表</span></div>
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    			<th>编号</th>
+    			<th width="20%">栏目名称</th>
+    			<th width="10%">显示顺序</th>
+    			<th width="10%">状态</th>
+    			<th width="10%">文档模板</th>
+    			<th>操作</th>
+    			<th>PID</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(c in categoryPage.list!){
+    		<tr>
+    			<td>${c.id}</td>
+    			<td>${c.name}</td>
+    			<td>${c.rank}</td>
+    			<td>${c.status == 1 ? '启用' : '禁用'}</td>
+    			<td>
+    			${c.typeDesc!}
+    			</td>
+    			<td>
+    			 <a class="tablelink" href="${base}/admin/newsCategory/edit/${c.id!}-${c.parentId}">编辑</a>
+    			 
+                 <a class="tablelink" href="javascript:void(0)" onclick="del('${c.id!}')">删除</a>
+                 
+                 @if(c.type == 0) {
+                 <a class="tablelink" href="${base}/admin/newsCategory/child/${category.id!}">管理子栏目</a>
+                 @}
+                 @if(c.type ==1 ) {
+                 <a class="tablelink" href="${base}/admin/newsCategory/content/${category.id!}">编辑内容</a>
+                 @}
+                 @if(c.type == 2) {
+                 <a class="tablelink" href="${base}/admin/news/index-1-${category.id!}">管理文章</a>
+                 @}
+    			</td>
+    			<td> ${c.pid!} </td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    </table>
+    @ include("/common/_paginate.html",
+    @ {"currentPage":categoryPage.pageNumber,"totalPage":categoryPage.totalPage,"actionUrl":actionUrl}) {}
+</div>
+<script>
+function del(id) {
+	if(confirm("确认要删除吗？此操作不可恢复！")) {
+		location.href='${base}/admin/newsCategory/delete/' + id;
+	}
+}
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+});
+</script>

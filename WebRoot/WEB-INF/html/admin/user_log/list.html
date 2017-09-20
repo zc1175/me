@@ -1,0 +1,46 @@
+@ include("/common/_header.html",{}) {} 
+@ include("/common/_position.html",{p1:'系统管理',p2:'用户管理'}) {}
+<div class="rightinfo">
+	<div class="tools">
+		<form id="queryForm" action="${base}/admin/userLog" method="post">
+			<input type="hidden" name="pageNumber" value="${page.pageNumber!1}" id="pageNumber" />
+			搜索 :
+			用户姓名<input type="text" name="user.name" value="${user.name!}"/>
+			<input type="submit" value="查询" />
+		</form>
+	</div>
+	<table class="tablelist">
+		<thead>
+			<tr>
+				<th width="20%">时间</th>
+				<th width="25%">资源类型</th>
+				<th width="35%">资源名称</th>
+			</tr>
+		</thead>
+		<tbody>
+			@ for(model in page.list!){
+			<tr>
+				<td>${model.createTime!,"yyyy-MM-dd HH:mm"}</td>
+				<td>${model.resourceType!}</td>
+				<td><a href="${base}${model.resourceUrl!}" target="_blank">${model.resourceName!}</a></td>
+			</tr>
+			@ }
+		</tbody>
+	</table>
+	@ include("/common/_paginate_.html", 
+	@ {"currentPage":page.pageNumber,"totalPage":page.totalPage,"actionUrl":""}) {}
+</div>
+<script>
+function del(id) {
+	if(confirm("确认要删除吗？此操作不可恢复！")) {
+		location.href='${base}/admin/user/delete/' + id;
+	}
+}
+function go2Page(pageNumber){
+	$("#pageNumber").val(pageNumber);
+	$("form").submit();
+}
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+});
+</script>

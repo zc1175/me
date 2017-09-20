@@ -1,0 +1,37 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'系统管理',p2:'日志查看'}) {}
+<div class="rightinfo">
+    <div class="formtitle" style="margin-bottom:0px;"><span>日志列表</span></div>
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    			<th width="5%">编号</th>
+    			<th width="10%">模块</th>
+    			<th width="10%">操作类型</th>
+    			<th width="5%">操作人</th>
+    			<th wdith="15%">操作时间</th>
+    			<th width="50%">数据</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(log in logPage.list!){
+    		<tr>
+    			<td>${log.id}</td>
+    			<td>${log.module}</td>
+    			<td>${log.type}</td>
+    			<td>${log.operator}</td>
+    			<td>${log.ctime}</td>
+    			<td>${log.description}</td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    </table>
+    @ include("/common/_paginate.html",
+    @ {"currentPage":logPage.pageNumber,"totalPage":logPage.totalPage,"actionUrl":"/admin/log/index-"}) {}
+</div>
+<script>
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+	});
+</script>
+

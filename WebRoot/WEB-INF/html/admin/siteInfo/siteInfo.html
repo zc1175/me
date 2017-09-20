@@ -1,0 +1,80 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'系统管理',p2:'参数设置'}) {}
+<form action="${base}/admin/siteInfo/save" method="post" name="siteInfoForm" id="siteInfoForm" enctype="multipart/form-data">
+<input type="hidden" name="siteInfo.id" value="${siteInfo.id!}">
+<ul class="forminfo">
+	<li>
+		<label>网站名称</label>
+		<input class="dfinput" type="text" name="siteInfo.name" value="${siteInfo.name!}" datatype="*"/>
+	</li>
+	<li>
+		<label>网站域名</label>
+		<input class="dfinput" type="text" name="siteInfo.domain" value="${siteInfo.domain!}" datatype="*"/>(以http://开头)
+	</li>
+	<li>
+		<label>网站标题</label>
+		<input class="dfinput" type="text" name="siteInfo.title" value="${siteInfo.title!}" datatype="*" style="width:400px;"/>
+	</li>
+	<li>
+		<label>网站关键字</label>
+		<input class="dfinput" type="text" name="siteInfo.keywords" value="${siteInfo.keywords!}" datatype="*" style="width:400px;"/>
+	</li>
+	<li>
+		<label>网站描述</label>
+		<textarea name="siteInfo.description" rows="10" cols="60" style="border:1px solid #ccc">${siteInfo.description!}</textarea>
+	</li>
+	<li>
+		<label>作者</label>
+		<input class="dfinput" type="text" name="siteInfo.author" value="${siteInfo.author!}" datatype="*" style="width:400px;"/>
+	</li>
+	<li>
+		<label>首页广告1</label>
+		链接URL：<input type="text" class="txt" name="siteInfo.indexAd1Url" value="${siteInfo.indexAd1Url!}" />
+		<input type="file" name="file1" />
+		@ if(null != siteInfo.indexAd1!) {
+		<br/><a target="_blank" href="${base}${siteInfo.indexAd1!}"><img width="100" height="100" border="0" src="${base}${siteInfo.indexAd1}" /></a>点击看大图 
+		 @}
+	</li>
+	<li>
+		<label>首页广告2</label>
+		链接URL：<input type="text" class="txt" name="siteInfo.indexAd2Url" value="${siteInfo.indexAd2Url!}" />
+		<input type="file" name="file2" />
+		@ if(null != siteInfo.indexAd2!) {
+		<br/> <a target="_blank" href="${base}${siteInfo.indexAd2!}"><img width="100" height="100" border="0" src="${base}${siteInfo.indexAd2}" /></a>点击看大图 
+		 @}
+	</li>
+	<li>
+		<label>首页广告3</label>
+		链接URL：<input type="text" class="txt" name="siteInfo.indexAd3Url" value="${siteInfo.indexAd3Url!}" />
+		<input type="file" name="file3" />
+		@ if(null != siteInfo.indexAd3!) {
+		<br/> <a target="_blank" href="${base}${siteInfo.indexAd3!}"><img width="100" height="100" border="0" src="${base}${siteInfo.indexAd3}" /></a>点击看大图 
+		 @}
+	</li>
+	<li>
+		<label>首页广告4</label>
+		链接URL：<input type="text" class="txt" name="siteInfo.indexAd4Url" value="${siteInfo.indexAd4Url!}" />
+		<input type="file" name="file4" />
+		@ if(null != siteInfo.indexAd4!) {
+		<br/> <a target="_blank" href="${base}${siteInfo.indexAd4!}"><img width="100" height="100" border="0" src="${base}${siteInfo.indexAd4}" /></a>点击看大图 
+		 @}
+	</li>
+	<li>
+		<label>首页广告5</label>
+		链接URL：<input type="text" class="txt" name="siteInfo.indexAd5Url" value="${siteInfo.indexAd5Url!}" />
+		<input type="file" name="file5" />
+		@ if(null != siteInfo.indexAd5!) {
+		<br/> <a target="_blank" href="${base}${siteInfo.indexAd5!}"><img width="100" height="100" border="0" src="${base}${siteInfo.indexAd5}" /></a>点击看大图 
+		 @}
+	</li>
+	<li>
+    <label>&nbsp;</label>
+	<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+	<input type="submit" value="保存"  class="btn btn-info"/>
+	</li>
+</ul>
+</form>
+
+<style>
+.txt { border:1px solid #ccc;width:200px;}
+</style>

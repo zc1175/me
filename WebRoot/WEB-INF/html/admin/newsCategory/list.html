@@ -1,0 +1,59 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'内容管理',p2:'栏目管理'}) {}
+<div class="rightinfo">
+	 <div class="tools">
+    	<ul class="toolbar">
+             <li class="click"><span><img src="${base}/admin/images/t01.png" /></span><a href="${base}/admin/newsCategory/add">添加栏目</a></li>
+        </ul>
+    </div>
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    			<th>编号</th>
+    			<th width="10%">栏目名称</th>
+    			<th width="10%">栏目 类型</th>
+    			<th width="10%">显示顺序</th>
+    			<th width="10%">状态</th>
+    			<th>操作</th>
+    			  		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(category in categoryPage.list!){
+    		<tr>
+    			<td>${category.id!}</td>
+    			<td>${category.name!}</td>
+    			<td>
+    		     ${category.typeDesc!}
+    			</td>
+    			<td>${category.rank!}</td>
+    			<td>${category.status == 1 ? '启用' : '禁用 '}</td>
+    			<td>
+    			 <a class="tablelink" href="${base}/admin/newsCategory/edit/${category.id!}">编辑</a>
+                 <a class="tablelink" href="javascript:void(0)" onclick="del('${category.id!}')">删除</a>
+                 @if(category.type == 0) {
+                 <a class="tablelink" href="${base}/admin/newsCategory/child/${category.id!}">管理子栏目</a>
+                 @}
+                 @if(category.type ==1 ) {
+                 <a class="tablelink" href="${base}/admin/newsCategory/content/${category.id!}">编辑内容</a>
+                 @}
+                 @if(category.type == 2) {
+                 <a class="tablelink" href="${base}/admin/news/index-1-${category.id!}">管理文章</a>
+                 @}
+    			</td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    </table>
+    @ include("/common/_paginate.html",
+    @ {"currentPage":categoryPage.pageNumber,"totalPage":categoryPage.totalPage,"actionUrl":actionUrl}) {}
+</div>
+<script>
+function del(id) {
+	if(confirm("确认要删除吗？此操作不可恢复！")) {
+		location.href='${base}/admin/newsCategory/delete/' + id;
+	}
+}
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+});
+</script>

@@ -1,0 +1,24 @@
+<style>
+select { opacity:1; border:1px solid #ccc; width:140px;height:25px;}
+</style>
+<div class="formtitle"><span>视频集管理</span></div>
+<form action="${base}/admin/videoCollection/save" method="post" name="videoCollectionForm" id="videoCollectionForm">
+<input type="hidden" name="videoCollection.id" value="${videoCollection.id!}">
+<ul class="forminfo">
+	<li>
+		<label>视频集名称</label>
+		<input class="dfinput" type="text" name="videoCollection.name" value="${videoCollection.name!}"  style="width:220px"/>
+	</li>
+	<li>
+    <label>&nbsp;</label>
+	<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+	<input type="submit" value="保存"  class="btn btn-info"/>
+	</li>
+</ul>
+</form>
+<script>
+
+$(function(){
+	
+});
+</script>

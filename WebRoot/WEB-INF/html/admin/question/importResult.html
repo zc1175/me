@@ -1,0 +1,18 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'测试平台',p2:'导入题库'}) {}
+
+<div style="margin:20px;line-height:25px;" >
+   文件名：${session.fileName!} 
+   &nbsp;&nbsp;
+   <a href="${base}/${session.filePath!}" target="_blank">下载</a>
+   <br/>
+   导入结果:
+   <br/>
+   @for(entry in session.ret!) {
+   ${entry.key!} &nbsp;&nbsp; 成功导入 &nbsp; ${entry.value!} &nbsp;题
+   @}
+   <br/>
+</div>
+<div style="clear:both">
+	<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+</div>

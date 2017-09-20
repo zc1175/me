@@ -1,0 +1,156 @@
+<div class="formtitle" style="margin-bottom:5px;"><span>试卷组合</span></div>
+<form action="${base}/admin/examCombo/save" method="post" name="examComboForm" id="examComboForm">
+<input type="hidden" name="examCombo.id" value="${examCombo.id!}">
+<div style="margin-bottom:15px;">
+<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+<input type="submit" value="保存"  class="btn btn-info"/>
+</div>
+<ul class="forminfo">
+	<li>
+		<label>考试分类</label>
+		<select id="selExamType" name="examCombo.examTypeId" onchange="getQuestionNum()">
+				<option value="">---请选择---</option>
+				@for(examType in examTypeList!) {
+				<option value="${examType.id!}">${examType.name!}</option>
+			@}
+		</select>
+	</li>
+	<li>
+		<label>试卷组合名称</label>
+		 <input class="dfinput" type="text" name="examCombo.name" value="${examCombo.name!}" />
+	</li>
+	<li>
+		<label>试题总数</label>
+		 <input class="dfinput" type="text" name="examCombo.questionNum" value="${examCombo.questionNum!}" />
+	</li>
+	<li>
+		<label>总分数</label>
+		 <input class="dfinput" type="text" name="examCombo.score" value="${examCombo.score!}" />
+	</li>
+	<li>
+		<label>题型明细</label>
+		<div style="color:red;clear:both;font-size:14px;line-height:18px;" id="msg"></div>
+		<p style="clear:both;margion:4px 0px;border-bottom:1px solid #ccc"></p>
+		<table width="800" cellspacing="1" cellpadding="0" id="tbldetails" style="margin-top:15px;">
+			<tr height="200" style="background:#ccc;height:25px">
+				<td width="160">科目</td>
+				<td width="150">题型</td>
+				<td width="200">范围</td>
+				<td width="150">数量</td>
+				<td width="80">每题分值</td>
+				<td>操作</td>
+			</tr>
+			@for(detail in examCombo.details!) {
+			<tr id="detail_${detail.id!}" height="25" >
+				<td>
+				<select name="subjectId"  style="width:120px">
+					<option value='-1'>---任意课程---</option>
+				</select>
+				</td>
+				<td>
+				<select name="questionTypeId"  style="width:50px">
+					<option value="${detail.questionTypeId!}">${detail.questionTypeName!}</option>
+				</select>
+				</td>
+				<td>
+				<input type='text' name='selectFrom' size='4' value="${detail.selectFrom!1}"/>
+				-
+				<input type='text' name='selectTo' size='4' value="${detail.selectTo!'-1'}"/>(-1所示不限)				
+				</td>
+				<td><input type='text' name='questionNum' size="4"  value='${detail.questionNum!}'/></td>
+				<td><input type='text' name='unitScore' size="4"  value='${detail.unitScore!}'/></td>
+				<td  align="right">
+				<a href="#" onclick="delDetail('${detail.id!}')">删除</a>
+				</td>
+			</tr>
+			@}
+		</table>
+		<table width="800" cellspacing="0" cellpadding="0" id="detailForm" style="margin-top:15px;">
+			<tr>
+				<td width="160">
+					<select id="subjectId" style="width:120px" onchange="getQuestionNum()">
+					</select>
+				</td>
+				<td width="150">
+				<select id="questionTypeId" style="width:50px">
+					@for(questionType in questionTypeList!) {
+					<option value="${questionType.id!}">${questionType.name!}</option>
+					@}
+				</select>
+				</td>
+				<td width="200">
+				<input type='text' id='selectFrom' size='4' value="1"/>
+				-
+				<input type='text' id='selectTo' size='4' value="-1"/>(-1所示不限)				
+				</td>
+				<td  width="120">
+					<input type="text" id="questionNum"  size="4" value="1" />
+				</td>
+				<td width="80">
+					<input type="text" id="unitScore"  size="4" value="1" />
+				</td>
+				<td  align="right">
+					<input type="button" value="  添  加  " onclick="saveExamComboDetail()"/>
+				</td>
+			</tr>
+		</table>
+	</li>
+	<li>
+		<label>&nbsp;</label>
+		
+	</li>
+</ul>
+</form>
+<script>
+$(function(){
+	$("#selExamType").val("${examCombo.examTypeId!}");
+	$("#questionTypeId").val("${examComboDetail.questionTypeId!}");
+	//--根据试卷类型加载课程列表
+	$("#selExamType").change(function(){
+		loadSubject();
+	});
+	loadSubject();
+});
+function loadSubject() {
+	var typeId = $("#selExamType").val();
+	if(typeId.length > 0) {
+		$("#subjectId").empty();
+		$("#subjectId").append($("<option value='-1'>---任意课程---</option>"));
+		$.getJSON("${base}/admin/subject/listJson",{"examTypeId":typeId},function(ret){
+			$.each(ret.data,function(index,item){
+				if(item != undefined) {
+					var op = $("<option value='"+item.id+"'>"+item.name+"</option>");
+					$("#subjectId").append(op);
+				}
+			});
+		});
+		
+	}
+}
+function saveExamComboDetail() {
+	var id = new Date().getTime();
+	var questionTypeName =  $("#questionTypeId option:selected").text();
+	var score = parseFloat($("#unitScore").val()) * parseInt($("#questionNum").val());
+	var tr = $("<tr id='detail_"+id+"' height=25><td><select name='subjectId'><option value='"+$("#subjectId").val()+"'>"+$("#subjectId option:selected").text()+"</option></select></td><td><select name='questionTypeId'><option value='"+$("#questionTypeId").val()+"'>"+questionTypeName+"</option></select></td><td><input type=text size=4 name='selectFrom' value='"+$("#selectFrom").val()+"'/>-<input type=text size=4 name='selectTo' value='"+$("#selectTo").val()+"'/></td><td><input size=4 type='text' name='questionNum' value='"+$("#questionNum").val()+"'/></td><td><input size=4 type='text' name='unitScore' value='"+$("#unitScore").val()+"'/></td><td align=right><a href='javascript:delDetail("+id+")'>删除</a></td></tr>");
+	$("#tbldetails").append(tr);
+}
+
+
+function delDetail(id) {
+	$("#detail_"+id).remove();
+}
+function getQuestionNum() {
+	if($("#selExamType").val() == -1) return;
+	$.getJSON("${base}/admin/examCombo/getQuestionNum",{"examTypeId":$("#selExamType").val(),"subjectId":$("#subjectId").val()},function(ret){
+		if(ret.result == "success") {
+			var html = "当前选择考试和科目下共有题目---- ";
+			html += ret.questionNum;
+			html += "<br/> 创建组合时，若超出题库现有数量，系统将自动修正！"
+			$("#msg").html(html);
+		}else{
+			$("#msg").html("获取题量信息出错：" + ret.errMsg)	;
+		}
+	});
+}
+
+</script>

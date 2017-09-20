@@ -1,0 +1,194 @@
+<form action="${base}/admin/question/save" method="post" name="questionForm" id="questionForm" onsubmit="return saveQuestion()">
+<input type="hidden" name="question.id" value="${question.id!}">
+<div class="formtitle" style="margin-bottom:10px;"><span>添加/修改试题</span></div>
+<div style="clear:both;margin-bottom:10px;">
+	<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+	<input type="submit" value="保存"  class="btn btn-info" />
+</div>
+
+<div id="usual1" class="usual"> 
+<div class="itab">
+ 	<ul> 
+       <li><a href="#tab1" class="selected">试题信息</a></li>
+       <li><a href="#tab2" class="">试题选项</a>
+ 	</ul>
+</div> 
+
+<div id="tab1" class="tabson">
+	<ul class="forminfo">
+	  <li>
+	     <label>考试分类</label>
+		 <select id="selExamType" name="question.examTypeId">
+		 	<option>---请选择---</option>
+		 	@for(examType in examTypeList) {
+		 	<option value="${examType.id!}">${examType.name!}</option>
+		 	@}
+		 </select>
+	 </li>
+	 
+	 <li>
+	     <label>所属课程</label>
+	     <select id="selSubject" name="question.subjectId">
+	     <option value=-1>---请选择---</option>
+	     </select>
+	 </li>
+	 
+	 
+	 
+	 <li>
+	 	<label>试题类型</label>
+	 	<select id="selQuestionType" name="question.questionTypeId">
+	 	@for(questionType in questionTypeList) {
+	 	<option value="${questionType.id!}">${questionType.name!}</option>
+	 	@}
+	 	</select> 
+	 </li>
+	 <!-- 试题的年份修改 -->
+	 <li>
+	     <label>试题年份</label>
+	     <input type="text" id="selSubject" name="question.year" value="${question.year!}" />(如:2017)
+	 </li>
+	 <li>
+	 	 <label>题目描述</label>
+	 	 @ include("/common/_editer.html", {"textarea_name" :"question.title", "textarea_content" : question.title!}){}
+	 </li>
+		 
+	 <li>
+	    <label>难易度</label> 
+		<select name="question.diffcult" id="selDiffcult">
+			<option value="易" selected>易</option>
+			<option value="中">中</option>
+			<option value="难">难</option>
+		</select>
+	 </li>
+	 <li>
+	 	<label>试题关键字</label>
+	 	<input type="text" name="question.keywords" value="${question.keywords!}" class="dfinput" />（多个关键字以分号分隔）
+	 </li>
+	 
+	 <li>
+	     <label>知识点</label> 
+		 <input type="text" name="question.knowledges" value="${question.knowledges!}"  class="dfinput"/>（多个以分号分隔）
+	 </li>
+	 <li>
+	     <label>试题解析</label> 
+	     @ include("/common/_editer.html", {"textarea_name" :"question.description", "textarea_content" : question.description!}){}
+	 </li>
+	 </ul>
+</div>
+
+
+<div id="tab2">
+	    <table width="100%" border="0" cellpadding="5" cellspacing="0" >
+    	<tr height="30" style="font-weight:bold;font-size:14px;text-align:center;">
+    	    <td>选项描述</td>
+    		<td>选项A</td>
+    		<td>选项B</td>
+    		<td>选项C</td>
+    		<td>选项D</td>
+    		<td>答案</td>
+    		<td>操作</td>
+    	</tr>
+    	<tbody id="questionSubTable">
+    		@for(sub in question.subs!){
+    		<tr id="sub_${sub.id!}" height="30">
+    			<th align="center"><input type="text" name="title" value="${sub.title!}" /></th>
+    			<td align="center"><input type="text" name="optiona" value="${sub.optiona!}" /></td>
+    			<td align="center"><input type="text" name="optionb" value="${sub.optionb!}" /></td>
+    			<td align="center"><input type="text" name="optionc" value="${sub.optionc!}" /></td>
+    			<td align="center"><input type="text" name="optiond" value="${sub.optiond!}" /></td>
+    			<td align="center"><input type="text" name="answer" value="${sub.answer!}" class="txtanswer" style="width:40px" /></td>
+    			<td align="center"><a href="javascript:;" onclick="delQuestionSub('${sub.id!}')">删除</a></td> 		
+    		</tr>
+    		@}
+    	</tbody>
+    </table>
+    
+	<div class="formtitle" style="margin-top:10px;"><span>添加选项</span></div>
+    <div class="subinfo">
+    	<table width="100%" cellspacing="2">
+    		<tr>
+    			<td width="150">选项描述</td>
+    			<td><textarea  id="title" rows="8" class="dfinput" style="width:400px"></textarea></td>
+    		</tr>
+    		<tr>
+    			<td>选项A</td>
+    			<td><input type="text" id="optiona" class="dfinput"/></td>
+    		</tr>
+    		<tr>
+    			<td>选项B</td>
+    			<td><input type="text" id="optionb" class="dfinput"/></td>
+    		</tr>
+    		<tr>
+    			<td>选项C</td>
+    			<td><input type="text" id="optionc" class="dfinput"/></td>
+    		</tr>
+    		<tr>
+    			<td>选项D</td>
+    			<td><input type="text" id="optiond" class="dfinput"/></td>
+    		</tr>
+    		<tr>
+    			<td>答案</td>
+    			<td><input type="text" id="answer" class="dfinput"/></td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">
+    			<input type="button" value="添加" onclick="addQuestionSub()" style="padding:5px 30px;"/>
+    			</td>
+    		</tr>
+    	</ul>
+    </div>
+</div>
+
+</div>
+
+</form>
+<script>
+function addQuestionSub() {
+	    var id= new Date().getTime();
+	    var tr = "<tr id='sub_" + id +"' height=25><td align=center><input type='text' name='title' value='"+$("#title").val()+"'/></td><td align=center><input type='text' name='optiona' value='" +$("#optiona").val()+"'/></td><td align=center><input type='text' name='optionb' value='"+$('#optionb').val()+"' /></td><td align=center><input type='text' name='optionc' value='"+$("#optionc").val()+"'/></td><td><input type='text' name='optiond' value='"+$("#optiond").val()+"'/></td><td><input type='text' name='answer' class='txtanswer' style='width:40px' value='"+$("#answer").val()+"'/></td><td align=center><a href=javascript:delQuestionSub('"+id+"')>删除</a></td></tr>";
+	    $("#questionSubTable").append(tr);
+	    $(".subinfo input").val("");
+	    $("#tab2 input[type='text']").not(".txtanswer").css("width",'200px');
+}
+function delQuestionSub(id) {
+		$("#sub_"+id).remove();
+}
+function saveQuestion() {
+	return true;
+}
+function loadSubject() {
+	var url = "${base}/admin/subject/listJson?t="+new Date().getTime();
+	var param = { "examTypeId" : $("#selExamType").val()}	
+	$("#selSubject").empty();
+	$("#selSubject").append($("<option value=-1>---请选择---</option>"))
+	if($("#selExamType").val() != "" && $("#selExamType").val() != "-1") {
+		$.getJSON(url,param,function(ret){
+			$.each(ret.data,function(index,item){
+				var o = $("<option>").val(item.id).text(item.name);
+				$("#selSubject").append(o);
+			});
+		});
+	}
+}
+$(function(){
+	$("#usual1 ul").idTabs();
+	$("#tab2 input[type='text']").not(".txtanswer").css("width",'200px'); 
+	
+	 var examTypeId = "${question.examTypeId!}"
+	  var subjectId = "${question.subjectId!}"
+	  var diffcult = "${question.diffcult!}";
+	  var typeId = "${question.questionTypeId!}";
+	  setTimeout(function(){
+		  $("#selExamType").val(examTypeId);
+		  if(examTypeId != "" && examTypeId != "-1") loadSubject();
+		  $("#selQuestionType").val(typeId);
+		  $("#selDiffcult").val(diffcult);
+	  },500);
+	  
+	  setTimeout(function(){ $("#selSubject").val(subjectId);},800);
+	$("#selExamType").change(loadSubject);	
+});
+
+
+</script>

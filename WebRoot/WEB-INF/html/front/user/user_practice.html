@@ -1,0 +1,38 @@
+
+	@ include("/front/user/_left.html",{"item":"practice"}) {}
+
+	<div class="col-md-9 col-sm-8 col-xs-8">
+	
+		<table class="table table-striped">
+			<thead>
+				<th width="50%">题库名称</th>
+				<th width="20%">练习时间</th>
+				<th width="15%">结果</th>
+				<th>操作</th>
+			</thead>
+			<tbody>
+			@for(ua in examPage.list) {
+			<tr>
+				<td>${ua.exam.name!}</td>
+				<td>${ua.startTime,"yyyy-MM-dd HH:mm"}</td>
+				<td>对${ua.correctNum!} 错${ua.wrongNum!}</td>
+				<td>
+				<a href="${base}/user/center/examdetail?id=${ua.id!}&item=practice">查看</a>
+				<a href="${base}/user/center/examquestion?id=${ua.id!}&item=practice">错题</a>
+				</td>
+			</tr>
+			@}
+			</tbody>
+		</table>
+		
+		@ include("/common/_paginate_.html",
+  		@ {"currentPage":examPage.pageNumber,"totalPage":examPage.totalPage}) {}
+  			 
+	</div>
+</div>
+<script>
+function go2Page(p) {
+	location.href="?p="+p;
+}
+</script>
+@ include("/front/common/_footer.html",{}) {}

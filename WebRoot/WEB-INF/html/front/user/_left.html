@@ -1,0 +1,30 @@
+@G_TITLE='用户中心'; 
+@ include("/front/common/_header.html",{"nav":"user","G_TITLE":G_TITLE!}) {}
+
+<div class="container">
+<div style="margin-bottom:20px;padding-left:25px;">
+<h4><span class="glyphicon glyphicon-user aria-hidden="true"></span> 个人中心</h4>
+</div>
+
+<div class="row">
+	
+	<div class="col-md-2 col-sm-3 col-xs-4">
+		<div class="list-group userNav" style="margin-left:20px;">
+		  <a href="#" class="list-group-item disabled">
+		    <span class="glyphicon glyphicon-home aria-hidden="true"></span>
+		    &nbsp;操作面板
+		  </a>
+		  <a href="${base}/user/center/exam" class="list-group-item ${item=='exam'?'active':''}">
+		   <span class="glyphicon glyphicon-cloud aria-hidden="true"></span>
+		  &nbsp;已参加考试</a>
+		  <a href="${base}/user/center/practice" class="list-group-item ${item=='practice'?'active':''}">
+		   <span class="glyphicon glyphicon-edit aria-hidden="true"></span>
+		  &nbsp;已完成练习</a>
+		  <a href="${base}/user/center/question" class="list-group-item ${item=='question'?'active':''}">
+		   <span class="glyphicon glyphicon-remove-circle aria-hidden="true"></span>
+		  &nbsp;错题本</a>
+		  <a href="${base}/user/center/repwd" class="list-group-item ${item=='repwd'?'active':''}">
+		   <span class="glyphicon glyphicon-asterisk aria-hidden="true"></span>
+		  &nbsp;修改密码</a>
+		</div>
+	</div>

@@ -1,0 +1,151 @@
+@G_TITLE='在线学习平台';
+
+@ include("/front/common/_header.html",{"nav":"index"}) {}
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+      <!-- Indicators -->
+      <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+      </ol>
+      <div class="carousel-inner" role="listbox">
+       
+        <div class="item active">
+          <img class="first-slide" src="" alt="">
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>文库 · 练习 · 模拟机考</h1>
+              <p>更多课程 · 更多题型 · 优化学习路径  </p>
+              <p ><a class="btn btn-lg btn-primary" href="${base}/docs" role="button">立即开始</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div><!-- /.carousel -->
+    
+<div class="container">
+      
+      <div class="row">
+      
+      	<div class="col-md-4 col-sm-4 col-xs-12">
+      		<h4 class="text-primary">
+      		<span class="glyphicon glyphicon-bullhorn"></span>
+      		最新资讯</h4>
+      		<div class="clearfix" style="margin:10px 0px;"></div>
+      		@if(newsList.~size == 0) {
+      		<div class="row">
+      			<div class="col-md-12">
+      				暂无
+      			</div>
+      		</div>
+      		@}else{
+      		@for(news in newsList!) {
+      		<div class="row">
+      			<div class="col-md-9 col-sm-9">
+      			<p class="newsTitle"><a target="_blank" href="${base}${news.linkUrl!}">
+				    <img src="${base}/front/images/icon_news.png" width="18" height="18" align="middle"/> 
+				    ${news.titleStr!}</a>
+		    	 </p>
+      			</div>
+      			<div class="col-md-3 col-sm-3 hidden-xs">
+      				<label style="color:#666"><small>${news.createTime,"MM-dd"}</small></label>
+      			</div>
+      		</div>
+          	@}
+          	@}
+      	</div>
+      
+      	<div class="col-md-4 col-sm-4 col-xs-12">
+      		<h4 class="text-primary">
+      		<span class="glyphicon glyphicon-list-alt"></span>
+      		最新文档</h4>
+      		<div class="clearfix" style="margin:10px 0px;"></div>
+      		@if(docList.~size == 0) {
+      		<div class="row">
+      			<div class="col-md-12">
+      				暂无
+      			</div>
+      		</div>
+      		@}else{
+      		@for(doc in docList!) {
+      		<div class="row">
+      			<div class="col-md-9 col-sm-9 cols-xs-12">
+      				<p><a target="_blank" href="${base}/docs/paper/${doc.pid!}">
+				    <img src="${base}/front/images/${doc.docTypeImg!}" width="18" height="18" align="middle"/> 
+				    ${strutil.length(doc.title)>25?strutil.subStringTo(doc.title!,0,25)+'...':doc.title!}</a>
+				    <label style="color:#666" class="hidden-lg hidden-md hidden-sm"><small>${doc.createTime,"MM-dd"}</small></label></p>
+      			</div>
+      			<div class="col-md-3 col-sm-3 hidden-xs">
+      				<label style="color:#666"><small>${doc.createTime,"MM-dd"}</small></label>
+      			</div>
+      		</div>
+          	@}
+          	@}
+      	</div>
+      	
+      	<div class="col-md-4 col-sm-4 col-xs-12">
+      		<h4 class="text-primary">
+      		<span class="glyphicon glyphicon-film"></span>
+      		最新视频</h4>
+      		<div class="clearfix" style="margin:10px 0px;"></div>
+      		@if(videoList.~size == 0) {
+      		<div class="row">
+      			<div class="col-md-12">
+      				暂无
+      			</div>
+      		</div>
+      		@}else{
+      		@for(video in videoList!) {
+      		<div class="row">
+      			<div class="col-md-9 col-sm-9">
+      				<p><a target="_blank" href="${base}/video/view/${video.pid!}">
+				    <img src="${base}/front/images/${video.videoFile.videoTypeImg!}" width="18" height="18" align="middle"/> 
+				    ${strutil.length(video.title)>25?strutil.subStringTo(video.title!,0,25)+'...':video.title!}</a></p>
+      			</div>
+      			<div class="col-md-3 col-sm-3 hidden-xs">
+      				<label style="color:#666"><small>${video.createTime,"MM-dd"}</small></label>
+      			</div>
+      		</div>
+          	@}
+          	@}
+      	</div>
+      	
+      </div>
+</div>
+@ include("/front/common/_footer.html",{}) {}
+<div class="modal fade" id="msgModal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <label class="modal-title" id="msgTitle">
+            系统提示
+            </label>
+         </div>
+         <div class="modal-body" id="msgContent" style="font-size:16px;color:red;">
+         训练系统已切换至<a href="http://192.168.34.6">http://192.168.34.6</a>,请相互告知！
+         <button class="btn btn-info" onclick="notips()">我知道了</button>
+         </div>
+      </div>
+	</div>
+</div>
+<script>
+$(function(){
+	/*if(getCookie("notips") == undefined) {
+		$('#msgModal').modal();
+	}*/
+});
+function notips() {
+	$("#msgModal").modal('hide');
+	setCookie("notips","1");
+}
+</script>

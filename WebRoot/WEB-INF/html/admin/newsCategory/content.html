@@ -1,0 +1,38 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'栏目管理',p2:'编辑内容'}) {}
+<div class="formbody">
+    <div class="formtitle"><span>栏目管理</span></div>
+	<form action="${base}/admin/newsCategory/saveContent" method="post" name="contentForm" id="contentForm">
+	<input type="hidden" name="newsCategory.id" value="${newsCategory.id!}">
+	<ul class="forminfo">
+		<li>
+			<label>频道名称</label>
+            <label>${newsCategory.name!}</label>
+		</li>
+
+		<li>
+			<label>内容</label>
+			@ include("/common/_editer.html", {"textarea_name" :"newsCategory.content", "textarea_content" : newsCategory.content!}){}
+		</li>
+		<li>
+	    <label>&nbsp;</label>
+		<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+		<input type="submit" value="保存"  class="btn btn-info"/>
+		</li>
+	</li>
+	</ul>
+	</form>
+	<script>
+	$(function(){
+		$("#contentForm").Validform({
+			tiptype:5
+		});
+		$("select").wrap("<div style='float:left'></div>").uedSelect({width : 160});
+	});
+	</script>
+	@if(null != msg!) {
+	<script>alert('${msg!}')</script>
+	@}
+	
+	
+</div>

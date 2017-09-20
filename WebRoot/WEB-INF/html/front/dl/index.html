@@ -1,0 +1,184 @@
+@G_TITLE='文库'; 
+@ include("/front/common/_header.html",{"nav":"dl","G_TITLE":G_TITLE!}) {}
+<style>
+.type-item-level2 { padding-left:30px;}
+.type-item-level3 { padding-left:45px;border-top-left-radius:0px;border-top-right-radius:0px;}
+.list-active { background-color:#f4f4f4;}
+.type-children { display:none;} 
+</style>
+
+<div style="height:15px"></div>
+
+<!-- 文档分类 -->
+<div class="container">
+	  <!-- 当前位置 -->
+	  <div style="margin:5px 0px 10px 0px;">
+	  当前位置：<a href="${base}/dl">学习资料</a> 
+	  @if(null != categoryPParent!) {
+	  &gt; <a href="javascript:s('typeId','${categoryPParent.id!}')">${categoryPParent.name!}</a>
+	  @}
+	  @if(null != categoryParent!) {
+	  &gt; <a href="javascript:s('typeId','${categoryParent.id!}')">${categoryParent.name!}</a>
+	  @}
+	  @if(null != category!) {
+	  &gt; <a href="javascript:s('typeId','${category.id!}')">${category.name!}</a>
+	  @}
+	  </div>
+	
+	  <div class="row">
+	  	<!-- 分类导航 -->
+	  	<div class="col-md-3 col-sm-3 hidden-xs">
+			<div class="cate-list">
+      			<a href="javascript:s('typeId','-1')" class="list-group-item" style="background-color:#f0f0f0;">
+      			<label>全部资料</label>
+      			</a>
+      			@for(dt in categoryList!){
+      			<a dtype="typeId" val='${dt.id!}' href="javascript:void(0)" class="list-group-item">
+      			@if(dt.childNum!0 == 0) {
+      			<span class="glyphicon glyphicon-list-alt"></span>
+      			@}
+      			@if((dt.childNum!0 > 0 && dt.id == parentId!) || (dt.childNum!0 >0 && dt.id == ppId!)){
+      			<span class="glyphicon glyphicon-minus" onclick="doSwitch(this,'${dt.id!}')"></span>
+      			@}else if(dt.childNum!0 > 0){
+      			<span class="glyphicon glyphicon-plus" onclick="doSwitch(this,'${dt.id!}')"></span>
+      			@}
+      			<label  style="cursor:pointer" onclick="javascript:s('typeId','${dt.id!}')">${dt.name!} (${dt.newsCount!0})</label>
+      			</a>
+      			<div id="type-child-${dt.id!}" class="type-children">
+      			@for(child in dt.child!) {
+      			<span class="list-group-item" style="display:none"></span>
+      			<a dtype="typeId" val="${child.id!}"  href="javascript:void(0)" class="list-group-item type-item-level2">
+      			
+      			@if(child.childNum!0 ==0 ) {
+      			<span class="glyphicon glyphicon-list-alt"></span>
+      			@}
+      			@if(child.childNum!0 > 0 && parentId! != child.id ) {
+      			<span class="glyphicon glyphicon-plus" onclick="doSwitch(this,'${child.id!}')"></span>
+      			@}else if(child.childNum!0 > 0){
+      			<span class="glyphicon glyphicon-minus" onclick="doSwitch(this,'${child.id!}')"></span>
+      			@}
+      			<label style="cursor:pointer" onclick="javascript:s('typeId','${child.id!}')">${child.name!} (${child.newsCount!0})</label>
+      			</a>
+      			<span class="list-group-item" style="display:none"></span>
+      			<div id="type-child-${child.id!}" class="type-children">
+      			@for(gchild in child.child!) {
+      			<span class="list-group-item" style="display:none"></span>
+      			<a dtype="typeId" val="${gchild.id!}" href="javascript:s('typeId','${gchild.id!}')" class="list-group-item type-item-level3">
+      			<label>${gchild.name!} (${gchild.newsCount!0})</label>
+      			</a>
+      			<span class="list-group-item" style="display:none"></span>
+      			@}
+      			</div>
+      			@}
+      			</div>
+      			@}
+      		</div>
+	  	</div>
+	    <!-- //分类导航 -->
+	    <!-- 文档列表  -->
+	    <div class="col-md-9 col-sm-9 col-xs-12">
+	    	<div style="display:none;background-color:#f0f0f0;border:1px solid #e0e0e0;padding:5px;margin-bottom:5px;">
+			<label><small>时间&nbsp;</small></label>
+			<button dtype="time" val="-1" type="button" class="btn btn-sm btn-link" onclick="s('time',-1)">全部 <span class="badge"></span></button>
+			<button dtype="time" val="3" type="button" class="btn btn-sm btn-link" onclick="s('time',3)">近三天 <span class="badge"></span></button>
+			<button dtype="time" val="7" type="button" class="btn btn-sm btn-link" onclick="s('time',7)">近一周 <span class="badge"></span></button>
+			<button dtype="time" val="31" type="button" class="btn btn-sm btn-link" onclick="s('time',31)">近一个月 <span class="badge"></span></button>
+			<label><small>排序&nbsp;</small></label>
+			<button dtype="orderBy" val="-1" type="button" class="btn btn-sm btn-link" onclick="s('orderBy',-1)">默认<span class="badge"></span></button>
+			<button dtype="orderBy" val="clickNum" type="button" onclick="s('orderBy','clickNum')" class="btn btn-sm btn-link">点击量</button>
+			<button dtype="orderBy" val="commentNum" type="button" onclick="s('orderBy','commentNum')" class="btn btn-sm btn-link">评论数</button>
+			<button dtype="orderBy" val="collectNum" type="button" onclick="s('orderBy','collectNum')" class="btn btn-sm btn-link">收藏量</button>
+			</div>
+			
+			
+		     @if(newsPage.totalRow  == 0 ) {
+      		<div class="text-center" style="height:20px">此栏目当前暂无资料</div>
+      		@}
+      	
+      		@for(news in newsPage.list!) {
+      		<div class="row" style="background:#fff;margin:0px;margin-top:5px;padding:5px 10px;">
+      			<div >
+	      			<div class="row" style="margin-top:10px">
+	      				<div class="col-md-10 col-sm-10 col-xs-9 words-nowrap" style="font-size:16px;">
+			      			<a href="${base}${news.linkUrl!}" target="_blank">${doc.titleStr!}</a>
+	      				</div>
+	      				<div class="col-md-2 col-sm-2 col-xs-3">
+	      					<label><small>${doc.createTime!,"yyyy-MM-dd"}</small> </label>
+	      				</div>
+	      			</div>
+      			</div>
+      		</div>
+      		@}
+      		@if(newsPage.totalRow > 0 ) {
+      		<div class="row" style="margin-left:0px;margin-top:10px;text-align:center;margin:0px auto;">
+      		 @ include("/common/_paginate_.html",
+  			 @ {"currentPage":newsPage.pageNumber,"totalPage":newsPage.totalPage}) {}
+      		</div>
+      		@}
+      	</div>
+	    <!-- //文档列表  -->
+	  </div>
+	 
+      
+</div>
+
+<form action="${base}/dl" method="get" id="newsForm">
+<input type="hidden" name="typeId" id="typeId" value="${typeId!}"/>
+<input type="hidden" name="time" id="time" value="${time!}"/>
+<input type="hidden" name="orderBy" id="orderBy" value="${orderBy!}" />
+<input type="hidden" name="pageNo" id="pageNo" value="1"/>
+
+</form>
+
+<script>
+	function doSwitch(o,tid) {
+		var isVisible = $("#type-child-"+tid).css("display");
+		if(isVisible == "" || isVisible == "block") {
+			$(o).removeClass('glyphicon-minus').addClass("glyphicon-plus");
+			$("#type-child-"+tid).hide();
+		}else{
+			$(o).removeClass('glyphicon-plus').addClass("glyphicon-minus");
+			$("#type-child-"+tid).show();
+		}
+	}
+	function s(formId,val) {
+		$("#"+formId).val(val);
+		$("#newsForm").submit();
+	}
+	function go2Page(p) {
+		$("#pageNo").val(p);
+		$("#newsForm").submit();
+	}
+	$(document).ready(function(){
+		var typeId = "${typeId!}";
+		var time = "${time!}"
+		var orderBy = "${orderBy!}"
+		$("[dtype='typeId']").each(function(index,item){
+			if($(item).attr("val")==typeId) {
+				$(item).addClass("list-active");
+			}else{
+				$(item).removeClass("active");
+			}
+		});
+		$("[dtype='time']").each(function(index,item){
+			if($(item).attr("val")==time) {
+				$(item).addClass("btn-default");
+			}else{
+				$(item).removeClass("btn-default");
+			}
+		});
+		$("[dtype='orderBy']").each(function(index,item){
+			if($(item).attr("val")==orderBy) {
+				$(item).addClass("btn-default");
+			}else{
+				$(item).removeClass("btn-default");
+			}
+		});
+		
+		$("#type-child-${parentId!'-1'}").show();
+		$("#type-child-${ppId!'-1'}").show();
+		
+	});
+</script>
+
+@ include("/front/common/_footer.html",{}) {}

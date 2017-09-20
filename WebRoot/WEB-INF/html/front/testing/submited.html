@@ -1,0 +1,27 @@
+@G_TITLE=exam.title!;
+@ include("/front/common/_header.html",{"nav":session.exam.answerType!,"G_TITLE":G_TITLE}) {}
+
+
+<style>
+</style>
+	<div class="row" style="margin-top:50px;padding:15px 0px;margin-bottom:1px;background:#edf4f8;">
+		<div class="col-md-12 text-center">
+			<h3>《${session.examName!}》 </h3>
+		</div>
+	</div>
+	<div class="row">
+			    <div class="col-md-12" style="padding-top:20px;font-size:16px;">
+				<p align="center">${session.submitStatus!}</p>
+				
+				<p align="center">
+				现在转至<a href="${base}/user/center"> 个人中心 </a> 查看错题信息
+				</p>
+				
+				<p align="center" style="margin-top:20px;">
+				<input type="button" value=" 返  回 " onclick="javascript:location.href='${base}/${session.exam.answerType!'testing'}'" style="width:80px;padding:5px 0px;">
+				</p>
+				</div>
+	</div>
+
+<div class="clearfix"></div>
+@ include("/front/common/_footer.html",{}) {}

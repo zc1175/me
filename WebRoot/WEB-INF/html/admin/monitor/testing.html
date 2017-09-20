@@ -1,0 +1,62 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'监控统计',p2:'答题实时'}) {}
+<div class="rightinfo">
+	 <div class="tools">
+	 <form action="${base}/admin/monitor/testing" method="post">
+		 查询条件：
+		 试卷:
+		 <select id="examId" name="examId">
+		 <option value="-1">---不限---</option>
+		 @for(exam in examList!){
+		 <option value="${exam.id!}">${exam.name!}</option>
+		 @}
+		 </select>
+		 用户登录名：<input type="text" class="dfinput" id="loginName" name="loginName" value="${loginName!}">
+		 <input type="submit" value="查询" />
+	 </form>
+    </div>
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    			<th width="10%">姓名</th>
+    			<th width="22%">试卷名称</th>
+    			<th width="8%">登录IP</th>
+    			<th width="12%">开考时间</th>
+    			<th width="8%">剩余时间</th>
+    			<th width="10%">答题</th>
+    			<th width="12%">最后答题</th>
+    			<th width="7%">状态</th>
+    			<th>操作</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(ans in answerPage.list!){
+    		<tr>
+    			<td class="textwrap">${ans.user.name!}(${ans.user.loginName!})</td>
+    			<td class="textwrap">${ans.exam.name!}</td>
+    			<td class="textwrap">${ans.loginIp!}</td>
+    			<td class="textwrap">${ans.startTime!,"yyyy-MM-dd HH:mm"}</td>
+    			<td class="textwrap">${ans.restTime!0}</td>
+    			<td class="textwrap">对${ans.correctNum!}题 错${ans.wrongNum!}题</td>
+    			<td class="textwrap">${ans.lastAnswerTime!,"MM-dd HH:mm"}(第${ans.lastAnswerQuestionNum!}题)</td>
+    			<td class="textwrap">${ans.status!}</td>
+    			<td><a href="javascript:;" onclick="showDetail('${ans.examId!}','${ans.userId!}')" class="tablelink">明细</a></td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    </table>
+    @ include("/common/_paginate.html",
+    @ {"currentPage":answerPage.pageNumber,"totalPage":answerPage.totalPage,"actionUrl":actionUrl!}) {}
+</div>
+<script>
+function showDetail(examId,userId){
+	location.href='${base}/admin/stat/scoreDetail?examId='+examId+"&userId="+userId;
+}
+$(document).ready(function(){
+  $('.tablelist tbody tr:odd').addClass('odd');
+  $("#examId").val("${examId!}");
+  
+});
+</script>
+
+

@@ -1,0 +1,9 @@
+/.DS_Store
+/META-INF
+/beetl.properties
+/com
+/config.properties
+/ehcache.xml
+/libhello.dylib
+/log4j.properties
+/simulation.txt

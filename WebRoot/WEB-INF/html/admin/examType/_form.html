@@ -1,0 +1,40 @@
+<div class="formtitle"><span>考试分类管理</span></div>
+<form action="${base}/admin/examType/save" method="post" name="examTypeForm" id="examTypeForm">
+<input type="hidden" name="examType.id" value="${examType.id!}">
+<input type="hidden" name="returnUrl" value="" id="returnUrl"/>
+<input type="hidden" name="examType.parentId" id="parentId" />
+<ul class="forminfo">
+	<li>
+		<label>考试名称</label>
+		<input class="dfinput" type="text" name="examType.name" value="${examType.name!}" />
+	</li>
+	<li>
+		<label>显示顺序</label>
+		<input class="dfinput" type="text" name="examType.rank" value="${examType.rank!}" />
+	</li>
+	<li>
+		<label>上级分类</label>
+		<span id="parentName"></span>
+	</li>
+	<li>
+    <label>&nbsp;</label>
+	<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+	<input type="submit" value="保存"  class="btn btn-info"/>
+	</li>
+</li>
+</ul>
+</form>
+<script>
+$(function(){
+
+	var pid = "${examType.parentId!}";
+	var pname = "${examType.name!}";
+	var pid2 = "${parentMenu.id!}";
+	var pname2="${parentMenu.name!}";
+	
+	if(pid != "" && pid != "-1") { $("#parentId").val(pid);$("#parentName").html(pname);$("#returnUrl").val("/admin/examType/child/${parentMenu.id!}");}
+	if( pid2 != "") { $("#parentId").val(pid2);$("#parentName").html(pname2); $("#returnUrl").val("/admin/examType/child/${parentMenu.id!}");}
+	if($("#parentName").html() == "") $("#parentName").html("顶层项目 ");
+	
+});
+</script>

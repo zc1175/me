@@ -1,0 +1,2 @@
+totalNum=1
+s1=测试1|/simulation/1/index.html

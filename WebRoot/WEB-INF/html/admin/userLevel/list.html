@@ -1,0 +1,50 @@
+@ include("/common/_header.html",{}) {} 
+@ include("/common/_position.html",{p1:'系统管理',p2:'用户等级管理'}) {}
+<div class="rightinfo">
+	<div class="tools">
+		<ul class="toolbar">
+			<li class="click"><span><img src="images/t01.png" />
+			</span><a href="${base}/admin/userLevel/add">添加用户等级</a>
+			</li>
+		</ul>
+	</div>
+	<table class="tablelist">
+		<thead>
+			<tr>
+				<th width="5%">编号</th>
+				<th width="15">名称</th>
+				<th width="10%">最小积分</th>
+				<th width="45%">描述</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			@ for(userLevel in userLevelPage.list!){
+			<tr>
+				<td>${userLevel.id}</td>
+				<td>${userLevel.name}</td>
+				<td>${userLevel.minScore}</td>
+				<td>${userLevel.remark}</td>
+				<td>
+				 <a	class="tablelink" href="${base}/admin/userLevel/edit/${userLevel.id!}">编辑</a>
+				<a class="tablelink" href="javascript:void(0)" onclick="del(${userLevel.id!})">删除</a></td>
+			</tr>
+			@ }
+		</tbody>
+	</table>
+
+
+
+	@ include("/common/_paginate.html", 
+	@ {"currentPage":userLevelPage.pageNumber,"totalPage":userLevelPage.totalPage,"actionUrl":"/admin/userLevel/index"}) {}
+</div>
+<script>
+function del(id) {
+	if(confirm("确认要删除吗？此操作不可恢复！")) {
+		location.href='${base}/admin/userLevel/delete/' + id;
+	}
+}
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+});
+</script>

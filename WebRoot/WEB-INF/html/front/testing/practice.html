@@ -1,0 +1,284 @@
+@G_TITLE=exam.title!;
+@ include("/front/common/_header.html",{"nav":"practice","G_TITLE":G_TITLE}) {}
+<link rel="stylesheet" type="text/css" href="${base}/ext/jqTransform/jqtransform.css" />
+<script type="text/javascript" src="${base}/ext/jqTransform/jquery.jqtransform.js"></script>
+<style>
+.rpanel .btn {  width:90px;background:#f0f0f0;}
+.rpanel .btn:hover { background:white;}
+.examContent .nav {height:300px; overflow-y:auto;overflow-x:hidden;}
+.examContent .nav { width:100%; padding:0px 5px; border-right:1px solid #e0e0e0;}
+.examContent .nav li { list-style:none;float:left;margin-left:5px; margin-top:5px; border:1px solid #ccc; padding:1px;width:25px;height:25px;text-align:center;line-height:25px;font-size:11px;}
+.examContent .nav li:hover { background:#e0e0e0;cursor:pointer; }
+.examContent .nav li.selected { border:1px solid #f7cda5;background:#fef1e2;}
+.examContent .nav li.answered { border:1px solid #addd96;background:#dcf4d1}
+.examContent .nav li.wrong { background:red;}
+.examContent .nav li.correct { background:#addd96;}
+.examContent .nav .questionType { border-top:1px solid #fefefe;font-size:14px; font-weight:bold;width:100%;margin-top:10px;padding:10px 0px;font-family:'宋体';}
+.examContent .question {width:100%; padding-left:0px;}
+.examContent .question .ntitle { height:20px;border-bottom:1px solid #fefefe;font-size:14px;padding:10px 0px;font-family:'宋体'}
+.examContent .question .title {display:block;font-size:20px;padding:10px;font-family:'宋体';line-height:26px;}
+.examContent .question ul li { list-style:none;padding-left:0px;font-size:16px;line-height:30px;font-family:'宋体'}
+.examContent .question ul li input { margin-right:15px;}
+.examContent .question .questionContent { overflow-y:auto; overflow:x:hidden;width:100%;}
+.examContent .errMsg { font-size:14px; color:red; padding-top:5px;}
+.examContent .nav .title { clear:both; height:20px;font-size:14px;font-family:'宋体';padding-left:10px}
+.panel { margin-bottom: 5px; }
+.panel-body { padding: 5px; border:0px;}
+.panel-primary { border:0px;}
+.panel-primary>.panel-heading{ padding: 5px 15px; background:#f0f0f0; border:0px;color:#000;}
+.jqTransformRadio { margin-right:10px; }
+.jqTransformCheckbox { margin-right:10px;}
+</style>
+
+<div class="row">
+	<div class="col-md-12 text-center" style="margin:10px;padding:10px;background:#fafafa">
+		<h2>《${exam.name!}》</h2>
+	</div>
+</div>
+<div class="alert alert-warning alert-dismissible" style="display:none;" id="errMsgDiv" role="alert">
+	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	<span class="glyphicon glyphicon-warning-sign"></span>
+	<div id="errMsg" class="pull-left">出错了，您的操作未正确执行！请刷新后重试！</div>
+</div>
+					
+<div class="row examContent" >
+	<div class="col-md-8 col-sm-8 col-xs-12" style="padding:15px 40px;">
+		<div class="col-md-12 col-sm-12 col-xs-12" >
+			<div id="questionNum"></div>
+			<div id="questionContent" class="question">
+			正在读取试题...
+			</div>
+			<div>
+				<button class="btn btn-default" id="prev">上一题</button>
+				&nbsp;&nbsp;
+				<button class="btn btn-default" id="next">下一题</button>
+			</div>
+			<div id="answerContent" style="display:none;padding:10px;font-size:16px;border:1px solid #666;">
+			
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3 col-sm-8 col-xs-12 " style="border:1px solid #f0f0f0;padding-left:0px;">
+		<div class="row"  style="padding:15px;margin-left:0px;text-align:center;background:#fafafa;border-bottom:1px solid #f0f0f0">
+			已用时：<span id="timeSpan">00:00:00</span>
+		</div>
+		<div class="row"  style="padding:15px;margin-left:0px;background:#fafafa;border-bottom:1px solid #f0f0f0">
+		<button style="float:right;margin-right:15px;" onclick="resetExam()" id="btnSubmit">重新答题</button>
+		<button style="float:right;margin-right:15px;" onclick="submitExam()" id="btnSubmit">结束作答</button>
+		</div>
+		<div class="row" style="padding:10px;margin-left:0px;background:#fafafa;border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;">
+		<label>答题卡</label>
+		</div>
+		<div>
+			<div class="nav">
+			${examStructureHtml!}
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div class="clearfix"></div>
+
+<div class="modal fade" id="msgModal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <label class="modal-title" id="msgTitle">
+            </label>
+         </div>
+         <div class="modal-body" id="msgContent">
+         </div>
+      </div>
+	</div>
+</div>
+
+<script>
+var time = parseInt("${session.userAnswer.usedSeconds!0}");
+var examId = "${exam.id!}"
+var curIndex=0;
+var curQuestionTypeId = 0;
+var curNum = 1;
+var maxNum = "${exam.questionNum!0}"
+var userAnswerId = "${session.userAnswer.id!}";
+var hasAnswered = false;
+function startTimer() {
+	time++;
+	h = parseInt(time / 3600) +":";
+	if(h.length == 2) h = "0" + h;
+	m = parseInt(time / 60) + ":";
+	if(m.length == 2) m = "0" + m;
+	s = (time % 60) + "";
+	if(s.length == 1) s = "0" + s;
+	$("#timeSpan").text(h+m+s);
+}
+function loadQuestion() {
+	var curVal = $(".nav .option").eq(curIndex).attr("vid");
+	curQuestionTypeId = curVal.split('-')[0];
+	curNum=curVal.split('-')[1];
+	hasAnswered = false;
+	$(".nav .option").each(function(index,item){ $(item).removeClass("selected") });
+	$(".nav .option[vid='"+curQuestionTypeId+"-"+curNum+"']").addClass("selected");
+	$("#questionContent").html("正在加载试题...");
+	$("#answerContent").hide();
+	var param = {"examId" : examId , "index" : curNum,"ss":1,"questionTypeId":curQuestionTypeId};
+	$("#questionNum").text("第" + (curIndex+1) + "题");
+	$.getJSON("${base}/question/getQuestionJsonByIndex",param,function(ret){
+		if("success" == ret.result) {
+			var html = ret.html;
+			html = html.replace("\\","");
+			$("#questionContent").html(html);	
+			if(html.indexOf('userAnswerIdentifier') != -1) {
+				hasAnswered = true;
+			}
+			else {
+				hasAnswered = false;
+				$("#questionContent input").each(function(index,item){$(item).prop("disabled",false)});
+			}
+			$("#errMsgDiv").hide();
+		}else{
+			$("#questionContent").html("加载试题出错，请刷新页面重试.");
+			$("#errMsgDiv").show();
+		}
+	});
+}
+function saveBatchAnswer() {
+	if(hasAnswered)	 return;
+	hasAnswered = true;
+	setBtnEnabled(false);
+	var ans = "";
+	var questionId,subId;
+	$("input[name='choice']").each(function(index,item){
+		if($(item).prop("checked")) {
+			ans += $(item).val().split("_")[2];
+			questionId = $(item).val().split("_")[0];
+			subId = $(item).val().split("_")[1];
+		}
+	});
+	var param = { "examId":examId,"questionId": questionId , "subId":subId, "answer" : ans,"num":curNum,"ss":"1"};
+	$.getJSON("${base}/question/saveAnswer",param,function(ret){
+		if('error' == ret.result) {
+			$(".errMsg").html("保存失败，请重试！")
+		}else{
+			//对已答题目进行标识
+			$(".examContent .nav ul li[vid='"+curQuestionTypeId+"-"+curNum+"']").addClass("answered")
+			var ansResult = "<p>结果：" + ret.correct + "</p>";
+			if(0 == ret.intCorrect) {
+				ansResult += "<p>正确答案：" + ret.answer + "</p>";
+			}
+			ansResult += "<p>解析：" + ret.description + "</p>";
+			$("#answerContent").html(ansResult).show();
+			if(0 == ret.intCorrect) {
+				$("#answerContent").css("color","red");
+				$("li[vid="+curQuestionTypeId+"-"+curNum+"]").addClass("wrong");
+			}
+			else {
+				$("#answerContent").css("color","green");
+				$("li[vid="+curQuestionTypeId+"-"+curNum+"]").addClass("correct");
+			}
+			$("#questionContent input").each(function(index,item){$(item).attr("disabled",true)});
+		}
+	});
+}
+function setBtnEnabled(bool) {
+	if(bool) {
+		$("#prev").attr("enabled",true);
+		$("#next").attr("enabled",true);
+	}else{
+		$("#prev").attr("enabled",false);
+		$("#next").attr("enabled",false);
+	}
+}
+function saveAnswer(liObj) {
+	if(hasAnswered)	 return;
+	var obj = $(liObj);
+	$(obj).prop("checked",true);
+	$("#questionContent input").each(function(index,item){$(item).attr("disabled",true)});
+	hasAnswered = true;
+	setBtnEnabled(false);
+	var value = $(obj).val();
+	var questionId = value.split("_")[0];
+	var subId = value.split("_")[1];
+	var answer = value.split("_")[2];
+	var param = { "examId":examId,"questionId": questionId , "subId":subId, "answer" : answer,"num":curNum,"ss":"1"};
+	$.getJSON("${base}/question/saveAnswer",param,function(ret){
+		if('error' == ret.result) {
+			$(".errMsg").html("保存失败，请重试！");
+			$("#questionContent input").each(function(index,item){$(item).attr("disabled",false)});
+		}else{
+			//对已答题目进行标识
+			$(".examContent .nav ul li[vid='"+curNum+"']").addClass("answered")
+			var ansResult = "<p>结果：" + ret.correct + "</p>";
+			if(0 == ret.intCorrect) {
+				ansResult += "<p>正确答案：" + ret.answer + "</p>";
+			}
+			ansResult += "<p>解析：" + ret.description + "</p>";
+			$("#answerContent").html(ansResult).show();
+			if(0 == ret.intCorrect) {
+				$("#answerContent").css("color","red");
+				$("li[vid="+curQuestionTypeId+"-"+curNum+"]").addClass("wrong");
+			}
+			else {
+				$("#answerContent").css("color","green");
+				$("li[vid="+curQuestionTypeId+"-"+curNum+"]").addClass("correct");
+			}
+			$("#questionContent input").each(function(index,item){$(item).attr("disabled",true)});
+		}
+	});
+}
+function submitExam() {
+	$("#btnSubmit").text("正在提交...").attr("disabled",true);
+	clearInterval(timer);
+	location.href='${base}/testing/submit?time='+time+'&userAnswerId='+userAnswerId;
+}
+function checkBtn() {
+	if(curNum==1) $("#prev").attr("disabled",true);
+	if(curNum<parseInt(maxNum)) $("#next").attr("disabled",false);
+	if(curNum>1) $("#prev").attr("disabled",false);
+	if(curNum==parseInt(maxNum)) $("#next").attr("disabled",true);
+}
+function resetExam() {
+	var url = "${base}/testing/reset?examId="+examId;
+	$("#msgTitle").html("提示");
+	$("#msgContent").html("正在重置，请稍等...");
+	$('#msgModal').modal();
+	location.href=url;
+}
+$(function(){
+	timer = setInterval(startTimer,1000);
+	loadQuestion();
+	$(".nav li").each(function(index,item){
+		$(item).click(function(){
+			curIndex=parseInt($(this).text())-1;
+			loadQuestion();
+		});
+	});
+	$("#prev").attr("disabled",true);
+	$("#prev").click(function(){
+		if(curIndex>1) {
+			curIndex--;
+			loadQuestion();
+		}else{
+			$("#prev").attr("disabled",true);
+		}
+		checkBtn();
+	});
+	$("#next").click(function(){
+		if(curIndex<parseInt(maxNum)-1) {
+			curIndex++;
+			loadQuestion();
+		}else {
+			$("#prev").attr("disabled",false);
+			$("#next").attr("disabled",true);
+		}
+		checkBtn();
+	});
+});
+</script>
+
+
+@ include("/front/common/_footer.html",{}) {}

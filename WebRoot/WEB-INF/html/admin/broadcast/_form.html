@@ -1,0 +1,48 @@
+<div class="formtitle"><span>广播信息</span></div>
+<script type="text/javascript" src="${base}/ext/My97DatePicker/WdatePicker.js"></script>
+<form action="${base}/admin/broadcast/save" method="post" name="broadcastForm" id="broadcastForm">
+<input type="hidden" name="broadcast.id" value="${broadcast.id!}">
+<ul class="forminfo">
+ <li>
+     <label>发送者</label> 
+	 <input type="text" name="broadcast.sender" value="${broadcast.sender!}"  class="dfinput validate[required]" />
+ </li>
+ <li>
+     <label>接收者</label> 
+	 <input type="text" name="broadcast.receiver" value="${broadcast.receiver!}"  class="dfinput validate[required]" />
+ </li>
+ <li>
+     <label>开始时间</label> 
+	 <input type="text" name="broadcast.startTime" value="${broadcast.startTime!}"  onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class=" dfinput Wdate validate[required]"  />
+ </li>
+ <li>
+     <label>结束时间</label> 
+	 <input type="text" name="broadcast.endTime" value="${broadcast.endTime!}"  onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="dfinput Wdate validate[required]" />
+ </li>
+ <li>
+     <label>标题</label> 
+	 <input type="text" name="broadcast.title" value="${broadcast.title!}"  class="dfinput validate[required]" />
+ </li>
+ <li>
+     <label>内容</label>
+	 @ include("/common/_editer.html", {"textarea_name" :"broadcast.content", "textarea_content" : broadcast.content!}){}
+ </li>
+<li>
+    <label>&nbsp;</label>
+	<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+	<input type="submit" value="保存"  class="btn btn-info"/>
+</li>
+</ul>
+</form>
+<script>
+$(function(){
+	$("#broadcastForm").validationEngine('attach',{
+		submitHandler:function(form){  
+            $("#btnSubmit").text("正在提交...").attr("disabled",true).addClass("btn-default");   
+            form.submit();  
+        },
+        promptPosition: 'centerRight', 
+        scroll: false 
+	});
+});
+</script>

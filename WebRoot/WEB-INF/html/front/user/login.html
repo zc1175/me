@@ -1,0 +1,67 @@
+@ include("/front/common/_header.html",{ "nav":"index" }) {}
+
+    <div class="container">
+    	<div class="col-md-4">
+    	</div>
+		<div class="col-md-4" style="border:0px solid #ccc;padding:10px 20px;">
+			<h2 style="padding-bottom:20px;" class="text-info">登录</h2>
+                <form  method="post" action="${base}/user/doLogin" id="loginForm">
+                	<input type="hidden" name="returnUrl" value="${returnUrl!'/'}" />
+                    <div class="alert alert-warning alert-dismissible" style="display:none;" id="errMsgDiv" role="alert">
+					  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					  <span class="glyphicon glyphicon-warning-sign"></span>
+					  <div id="errMsg" class="pull-left">登录名密码不匹配，请检查！</div>
+					</div>
+                    <div class="form-group">
+                        <label for="loginName">登录名</label>
+                        <input type="text" name="loginName" id="loginName" placeholder="输入登录名" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile_pwd_ipt" class="loginPwd">密码</label>
+                        <input type="password" name="loginPwd" id="loginPwd" placeholder="输入密码" class="form-control">
+                    </div>
+                   <div class="form-group">
+					      <div class="checkbox">
+					        <label>
+					          <input type="checkbox" id="rememberMe" name="rememberMe" value="on" onchange="remMe(this)"> 记住我
+					        </label>
+					    </div>
+					</div>
+                     <div class="form-group">
+					    <div class="col-md-12">
+					      <button type="submit" class="btn btn-default"> 登  录 </button>
+					    </div>
+					  </div>
+                </form>
+                <hr/>
+                <div class="col-md-12 hidden " style="padding-top:10px">
+                   <a href="javascript:void(0)" style=""> 忘记密码</a> | <a href="javascript:void(0)">注册新账号</a> 
+                </div>
+		</div>
+		<div class="col-md-4">
+    	</div>
+    
+    </div>
+    
+@ include("/front/common/_footer.html",{}) {}
+<script>
+	$(function(){
+		var error = Request.QueryString("error");
+		if(error != undefined && error.length > 0) {
+			$("#errMsgDiv").show();
+		}
+		var userName = getCookie("userName");
+		if(null != userName) {
+			$("#loginName").val(userName);
+			$("#rememberMe").prop("checked",true);
+		}
+	});
+	function remMe(obj) {
+		if($(obj).prop("checked")) {
+			setCookie("userName",$("#loginName").val());
+		}
+	}
+</script>
+   
+
+

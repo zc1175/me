@@ -1,0 +1,137 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'文档管理',p2:'文档列表'}) {}
+<div class="rightinfo">
+	 <div class="tools">
+    	<ul class="toolbar">
+             <li class="click"><span><img src="${base}/admin/images/t01.png" /></span><a href="${base}/admin/docfile/add/1-${company.id!}">上传文档</a></li>
+              <li class="click"><span><img src="${base}/admin/images/ico06.png" /></span><a href="javascript:void(0)" onclick="location.reload();">刷新</a></li>
+        </ul>
+    </div>
+    <form action="#" method="post" id="docForm">
+    <input type="hidden" name="pageNo" value="${pageNo!}" />
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    		    <th width="3%">
+    		    <input type="checkbox" onclick="doSelectAll(this)"/>
+    		    </th>
+    			<th width="15%">分类名称</th>
+    			<th width="25%">标题</th>
+    			<th width="5%">原文件</th>
+    			<th width="10%">统计</th>
+    			<th width="10%">上传时间</th>
+    			<th width="5%">发布者</th>
+    			<th width="20%">操作</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(doc in docPage.list!){
+    		<tr>
+    			<td>
+    			<input type="checkbox" value="${doc.id!}" name="docIds"	/>
+    			</td>
+    			<td>${doc.typeName!}</td>
+    			<td>${doc.checkedStr!}${doc.title!}</td>
+    			<td>
+    			@if(null != doc.docFile!) {
+    			<a href="${basePath}/${doc.docFile.docFilePath!}" target="_blank">查看</a>
+    			@}else{
+    			未上传
+    			@}
+    			</td>
+    			<td>阅读${doc.clickNum!0}下载${doc.downloadNum!0}收藏${doc.collectNum!0}</td>
+    			<td>${doc.createTime!,"yyyy-MM-dd HH:mm"}</td>
+    			<td>${doc.creatorName!}</td>
+    			<td>
+    			@if(null != doc.docFile){
+    			@if(null == doc.docFile.swfFilePath!){
+    			 <a id="lblCreate" class="tablelink" href="javascript:void(0)" onclick="createSwf('${doc.docFile.id}')">生成SWF</a></span>
+    			@}else{
+    			 <a class="tablelink" href="${base}/docs/paper/${doc.pid!}" target="_blank">预览</a>
+    			 <a class="tablelink" href="${base}/docs/dl/${doc.pid!}" target="_blank">下载PDF</a>
+    			@} 
+    			@}   	
+    			
+    			<a class="tablelink" href="${base}/admin/docfile/edit/${doc.id!}">编辑</a>
+    				
+    			@if(session.loginOperator.roleId+"" == adminId+"") {
+    			  <a class="tablelink" href="javascript:void(0)" onclick="del('${doc.id}')">彻底删除</a>
+    			@}
+    			
+    			
+    			</td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    	<tfoot>
+    		<tr bgcolor="#f0f0f0">
+    			<td colspan="8" style="padding:10px 0px;" align="left">
+				@if(session.loginOperator.roleId+"" == adminId+"") {
+				<input type="button" value="审核上线" onclick="batchCheck(1)"/>
+				<input type="button" value="指量下线" onclick="batchCheck(0)"/>
+				@}
+								    			
+    			<input type="button" value="批量生成SWF（后台队列执行）" onclick="batchCreateSwf()" />
+    			<span style="display:inline" id="lblMsg"></span>
+    			
+    			@if(session.loginOperator.roleId+"" == adminId+"") {
+    			  <input type="button" value="批量删除" onclick="batchDel()">
+    			@}
+    			
+    			
+    			</td>
+    		</tr>
+    	</tfoot>
+    </table>
+    </form>
+    @ include("/common/_paginate.html",
+    @ {"currentPage":docPage.pageNumber,"totalPage":docPage.totalPage,"actionUrl":actionUrl!}) {}
+</div>
+<script>
+function doSelectAll(obj) {
+	$("input[name='docIds']").each(function(index,item){
+		$(item).attr("checked",$(obj).attr("checked"));
+	});
+}
+function batchCheck(chk) {	
+	$("#docForm").attr("action","${base}/admin/docfile/doCheck?chk="+chk).submit();
+}
+function batchDel() {
+	$("#docForm").attr("action","${base}/admin/docfile/doBatchDel").submit();
+}
+function del(id) {
+	if(confirm("确认要删除吗？此操作不可恢复！")) {
+		location.href='${base}/admin/docfile/delete/' + id;
+	}
+}
+function batchCreateSwf() {
+	var ids = "";
+	$.each($("input[name='docIds']:checked"),function(){
+		ids += $(this).val();
+		ids += ",";
+	});
+	ids = ids.substr(0,ids.length-1);
+	var url = "${base}/admin/docfile/batchCreateSwf?t="+new Date().getTime();
+	var param = { "docIds" : ids };
+	$.post(url,param,function(ret){
+		$("#lblMsg").html("<font color=red>"+ret.msg+"</font>");
+	});
+}
+function createSwf(id) {
+	$("#lblCreate").html("生成中");
+	var url ="${base}/admin/docfile/ajaxCreate?t="+new Date().getTime();
+	var param = { "id" : id};
+	$.post(url,param,function(ret){
+		if(ret.result == "success") {
+			location.reload();
+		}else{
+			alert("服务端处理失败，请稍后");
+			location.reload();
+		}
+	});
+	
+}
+$(document).ready(function(){
+  $('.tablelist tbody tr:odd').addClass('odd');
+});
+</script>

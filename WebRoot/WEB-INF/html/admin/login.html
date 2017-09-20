@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>欢迎登录在线学习平台综合管理系统</title>
+<link href="${base}/admin/css/style.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="${base}/admin/js/jquery.js"></script>
+<script src="${base}/admin/js/cloud.js" type="text/javascript"></script>
+
+<script language="javascript">
+	$(function(){
+    $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
+	$(window).resize(function(){  
+    $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
+    })  
+});  
+</script> 
+
+</head>
+
+<body style="background-color:#1c77ac; background-image:url(${base}/admin/images/light.png); background-repeat:no-repeat; background-position:center top; overflow:hidden;">
+    <div id="mainBody">
+      <div id="cloud1" class="cloud"></div>
+      <div id="cloud2" class="cloud"></div>
+    </div>  
+
+<form action="${base}/admin/doLogin" method="post">
+<div class="logintop">    
+    <span>欢迎登录在线学习平台综合管理系统</span>    
+    <ul>
+    <li><a href="#">回首页</a></li>
+    </ul>    
+    </div>
+    <div class="loginbody">
+    <span class="systemlogo"></span> 
+    <div class="loginbox">
+    <ul>
+    <li><i>请输入登录名</i><br/><input name="operator.loginName" type="text" class="loginuser"/></li>
+    <li><i>请输入登录密码</i><br/><input name="operator.loginPwd" type="password" class="loginpwd" /></li>
+    <li><input type="submit" class="loginbtn" style="border:0px" value="登录"  />
+    <font color="red">${msg!}</font>
+    </li>
+    </ul>
+    </div>
+    </div>
+ </form>
+    <div class="loginbm">版权所有 &copy; 2014-2015 技术支持QQ：236306746
+    <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=236306746&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:236306746:51" alt="点击这里给我发消息" title="点击这里给我发消息"/></a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="${siteInfo.description!}">
+<meta name="keywords" content="${siteInfo.keywords!}">
+<meta name="author" content="${siteInfo.author!}">
+<link rel="icon" href="${base}/favicon.ico">
+<title>${G_TITLE!null == null ?'首页': G_TITLE} ${siteInfo.title!}</title>
+<link href="${base}/ext/bootstrap-3.3.5-dist/css/bootstrap.min.css" style="text/css" rel="stylesheet">
+<link href="${base}/ext/bootstrap-3.3.5-dist/css/bootstrap-theme.min.css" style="text/css" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="${base}/ext/video-js/video-js.css" />
+<link href="${base}/front/css/style.css" style="text/css" rel="stylesheet">
+<script src="${base}/front/js/jquery-1.11.3.min.js"></script>
+<script src="${base}/ext/bootstrap-3.3.5-dist/js/bootstrap.min.js""></script>
+<script src="${base}/front/js/tools.js"></script>
+</head>
+<body>
+	<nav class="navbar navbar-default" id="nav-menu">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+					aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span> 
+					<span class="icon-bar"></span> 
+					<span class="icon-bar"></span> 
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">技能大赛在线学习</a>
+			</div>
+
+			<div class="collapse navbar-collapse"
+				id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li ${nav=="index"?"class='active'":""}>
+					<a href="${base}/">首页<span class="sr-only">(current)</span></a></li>
+					<li ${nav=="news"?"class='active'":""}><a href="${base}/news">资讯</a></li>
+					<li ${nav=="docs"?"class='active'":""}><a href="${base}/docs">文库</a></li>
+					<li ${nav=="video"?"class='active'":""}><a href="${base}/video">视频</a></li>
+					<li ${nav=="practice"?"class='active'":""}><a href="${base}/practice">练习</a></li>
+					<li ${nav=="exam"?"class='active'":""}><a href="${base}/testing">模考</a></li>
+					<li ${nav=="dl"?"class='active'":""}><a href="${base}/dl">学习资料</a></li>
+					<li ${nav=="simulation"?"class='active'":""}><a href="${base}/simulation"></a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right" id="nav-login">
+					@if(null == session.loginUser!) {
+		            <li><a href="javascript:login()">登录</a></li>
+		            <li><a href="javascript:void(0)" onclick="alert('在线注册未开通，请联系站长获取账号信息')">注册</a></li>
+		            @}else{
+		            <li ${nav=="user"?"class='active'":""}><a href="${base}/user/center">个人中心(${session.loginUser.name!})</a></li>
+		            <li><a href="${base}/user/logout">[退出]</a></li>
+		            @}
+          		</ul>
+			</div>
+		</div>
+	</nav>
+	<script>
+		function login(){
+			location.href='${base}/user/login?returnUrl='+location.href;
+		}
+	</script>

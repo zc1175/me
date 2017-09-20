@@ -1,0 +1,88 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'答题明细'}) {}
+<style>
+.info { font-size:14px;font-weight:bold; margin:5px;}
+.readonly { border-bottom:1px solid #ccc;font-size:16px;}
+.examContent {margin-top:15px;padding-left:20px;border:1px solid #ccc;margin:5px;padding-bottom:20px;}
+.examContent .questionType { font-size:14px;font-weight:bold;padding-top:15px;}
+.examContent .questionList { padding-left:30px;}
+.examContent .questionList .title,.examContent .questionList .title font { font-size:14px;font-weight:bold;}
+.examContent .questionList .optionList  { margin-top:15px; font-size:14px;}
+</style>
+<div style="margin:5px;">
+<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+<input type="button" onclick="exportWord()" class="btn btn-info" value="导出为WORD"></input>(目前只适用于IE内核浏览器<a href="${base}/help/export_word.html" target="_blank">导出帮助</a>)
+</div>
+<div id="content">
+<div style="padding:5px 20px;border:1px solid #ccc;margin:5px;">
+	 <div  class="info">
+	 试卷名称：<label class="readonly">${exam.name!}</label> 
+	 &nbsp;&nbsp;
+	 总分：<label class="readonly">${exam.score!,numberFormat="##.#"}分</label> 
+	  &nbsp;&nbsp;
+	  总时间：<label class="readonly">${exam.timeLength!}分钟</label> 
+    </div>
+     <div class="info">
+	 考生姓名：<label class="readonly">${user.name!} </label> 
+	  &nbsp;&nbsp;
+	  开考时间：<label class="readonly">${userAnswer.startTime!,"yyyy-MM-dd HH:mm"}</label> 
+	  &nbsp;&nbsp;答题用时：<label class="readonly">${userAnswer.usedTime!}</label> 
+	  &nbsp;&nbsp;得分：<label class="readonly">
+	  @if(null == userAnswer.submitTime!) {
+	  未交卷
+	  @}else{
+	  ${userAnswer.score!0,numberFormat="##.##"}分
+	  @}
+	  </label> 
+    </div>
+</div>
+<div class="examContent">
+@var num = 1;
+@for(entry in structure!) {
+@var comboDetail = entry.key;
+@var answerList = entry.value;
+	<div class="questionType">${comboDetail.questionTypeName!}(共${comboDetail.questionNum!}题，每题${comboDetail.unitScore!,numberFormat="##.#"}分)</div>
+	<div class="questionList">
+	@for(answer in answerList!) {
+		<div class="title" style="margin-top:15px;">${num!}.&nbsp; ${answer.question.title!}</div>
+		<div class="optionList">
+		@for(sub in answer.question.subs!) {
+			<div class="title">${answer.correctedDes!} ${sub.title!} (正确答案：${strutil.toUpperCase(sub.answer!'')} &nbsp;你的答案：${answer.answer!})</div>
+			A. ${sub.optiona!}<br/>			
+			B. ${sub.optionb!}<br/>			
+			@if(!isEmpty(sub.optionc!) ) {
+				C. ${sub.optionc!}<br/>
+			@}			
+			@if(!isEmpty(sub.optiond!)) {
+				D. ${sub.optiond!}<br/>
+			@}		
+			@if(!isEmpty(sub.optione!)) {	
+				E.${sub.optione!}<br/>		
+			@}
+			@if(!isEmpty(sub.optionf!)) {	
+				F. ${sub.optionf!}<br/>
+			@}
+			@num++;			
+		@}
+		</div>
+	@}
+	</div>
+@}
+</div>
+</div>
+<script>
+function getExportPath() {  
+    var shell = new ActiveXObject("Shell.Application");  
+    var folder = shell.BrowseForFolder(0, '请选择存储目录', 0x0040, 0x11);   
+    var filePath;  
+    if(folder != null) {  
+         filePath = folder.Items().Item().Path;  
+    }  
+    return filePath;  
+} 
+function exportWord() {
+	var url ="${base}/admin/stat/exportWord?examId=${exam.id!}&userId=${user.id!}";
+	window.open(url);
+	
+}
+</script>

@@ -1,0 +1,197 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'测试平台',p2:'试题列表'}) {}
+<div class="rightinfo">
+	 <div class="tools">
+    	<ul class="toolbar">
+             <li class="click"><span><img src="${base}/admin/images/t01.png" /></span><a href="${base}/admin/question/add">添加试题</a></li>
+             <li class="click"><span><img src="${base}/admin/images/t04.png" /></span><a href="${base}/admin/question/batchImport">导入试题</a></li>
+        </ul>
+    </div>
+    <form action="${base}/admin/question" method="post" id="queryForm">
+    <input type="hidden" name="pageNumber" id="pageNumber" value="${pageNumber!1}"/>
+    <table class="tablelist" style="margin-bottom:5px;">
+    		<tr>
+    			<td>试题筛选：</td>
+    			<td>
+    			考试分类：
+    			<select id="selExamType" name="questionQuery.examTypeId">
+				 	<option value="-1">---不限---</option>
+				 	@for(examType in examTypeList!) {
+				 	<option value="${examType.id!}">${examType.name!}</option>
+				 	@}
+				 </select>
+				  <label>所属课程</label>
+			     <select id="selSubject" name="questionQuery.subjectId">
+			     <option value="-1">---不限---</option>
+			     </select>
+			   题目类型:
+			   <select id="selQuestionType" name="questionQuery.typeId">
+			   	<option value="-1">---不限---</option>
+			   	@for(type in typeList!) {
+			   	<option value="${type.id!}">${type.name!}</option>
+			   	@}
+			   </select>
+			          标题：<input type="text" name="questionQuery.title" value="${questionQuery.title!}" />
+			    <label>难易度</label> 
+				<select name="questionQuery.diffcult" id="selDiffcult">
+					<option value="">---不限---</option>
+					<option value="易">易</option>
+					<option value="中">中</option>
+					<option value="难">难</option>
+				</select>
+				</td>
+				<tr><td></td>
+				<td>
+				<label>试题关键字</label>
+			 	<input type="text" name="questionQuery.keywords" value="${questionQuery.keywords!}"  />
+			 	
+			 	<label>按年份</label>
+			 	<input type="text" name="questionQuery.year" value="${questionQuery.year!}"  />
+			 	<input type="submit" value="  查 询   " />
+			 	<input type="button" value="   清空查询条件    " onclick="clearQueryData()" />
+		    	</td>
+		    	<!-- 显示记录数 -->
+		    	<td>
+			    	<label>共有：</label>
+			    		<code style="font-size: 14px" >${page.totalRow!}</code> 
+			    	<label>条</label>
+		    	</td>
+		    </tr>
+    </table>
+    </form>
+    
+    <form action="#" method="post" id="questionForm">
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    			<th width="5%">#</th>
+    			<th width="10%">考试分类</th>
+    			<th width="12%">课程名</th>
+    			<th width="5%">题型</th>
+    			<th width="40%">标题</th>
+    			<th width="5%">难易</th>
+    			<th width="10%">关键字</th>
+    			<th>操作</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(question in page.list!){
+    		<tr>
+    			<td>
+				<input type="checkbox" name="questionIds" value="${question.id!}"/>
+				</td>
+    			<td>
+    			@if(strutil.length(question.typeName!) > 8) {
+    			${strutil.subStringTo(question.typeName!,0,7)}...
+    			@}else {
+    			${question.typeName!}
+    			@}
+    			</td>
+    			<td>
+    			${question.subject.name!}
+    			</td>
+    			
+    			<td>${question.questionTypeName!}</td>
+    			<td>
+    			@if(strutil.length(question.title!) > 35) {
+    			${strutil.subStringTo(question.title!,0,35)}...
+    			@}else {
+    			${question.title!}
+    			@}
+    			</td>
+    			<td>${question.diffcult!}</td>
+    			<td>${question.keywords!}</td>
+    			<td>
+    			 <a class="tablelink" href="${base}/admin/question/edit/${question.id!}">编辑</a>
+                 <a class="tablelink" href="javascript:void(0)" onclick="del(${question.id!})">删除</a>
+    			</td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    </table>
+    		<input type="button" value="全选"  onclick="selectAll(true)"/>
+    		<input type="button" value="全不选"  onclick="selectAll(false)"/>
+    		<input type="button" value="反选"  onclick="deSelectAll()" />
+    		<input type="button" value="批量删除" onclick="batchDelete()" />
+    </form>
+    
+    
+     @ include("/common/_paginate_.html",
+     @ {"currentPage":page.pageNumber,"totalPage":page.totalPage,"actionUrl":actionUrl!}) {}
+    
+    
+</div>
+<script>
+function selectAll(b) {
+		$("input[name='questionIds']").prop("checked",b);
+}
+function deSelectAll(){
+	$("input[name='questionIds']").each(function(index,item){
+		$(item).prop("checked",!$(item).prop("checked"));
+	});
+}
+function batchDelete(){
+	var valid = false;
+	$("input[name='questionIds']").each(function(index,item){
+		if($(item).prop("checked")) {
+			valid = true;
+			return;
+		}
+	});
+	if(!valid) {
+		alert('请至少选择一项');
+		return;
+	}
+	if(confirm('确定要删除吗？')) {
+		$("#questionForm").attr("action","${base}/admin/question/batchDelete").submit();
+	}
+	
+}
+function del(id) {
+	if(confirm("确认要删除吗？此操作不可恢复！")) {
+		location.href='${base}/admin/question/delete/' + id;
+	}
+}
+function loadSubject() {
+	var url = "${base}/admin/subject/listJson?t="+new Date().getTime();
+	var param = { "examTypeId" : $("#selExamType").val()}	
+	$("#selSubject").empty();
+	$("#selSubject").append($("<option value=-1>---不限---</option>"))
+	if($("#selExamType").val() != "" && $("#selExamType").val() != "-1") {
+		$.getJSON(url,param,function(ret){
+			$.each(ret.data,function(index,item){
+				var o = $("<option>").val(item.id).text(item.name);
+				$("#selSubject").append(o);
+			});
+		});
+	}
+}
+function clearQueryData() {
+	$("#queryForm select").val("-1");
+	$("#queryForm input[type=text]").val("")
+
+}
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+	  
+	  var examTypeId = "${questionQuery.examTypeId!}"
+	  var subjectId = "${questionQuery.subjectId!}"
+	  var diffcult = "${questionQuery.diffcult!}";
+	  var typeId = "${questionQuery.typeId!}";
+	  setTimeout(function(){
+		  $("#selExamType").val(examTypeId);
+		  if(examTypeId != "" && examTypeId != "-1") loadSubject();
+		  $("#selQuestionType").val(typeId);
+		  $("#selDiffcult").val(diffcult);
+	  },200);
+	  
+	  setTimeout(function(){ $("#selSubject").val(subjectId);},400);
+	  
+	  
+ 	  $("#selExamType").change(loadSubject);	
+});
+function go2Page(p) {
+	$("#pageNumber").val(p);
+	$("#queryForm").submit();
+}
+</script>

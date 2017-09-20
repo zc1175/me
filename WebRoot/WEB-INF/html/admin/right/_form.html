@@ -1,0 +1,47 @@
+<div class="formtitle"><span>权限信息</span></div>
+<form action="${base}/admin/right/save" method="post" name="rightForm" id="rightForm">
+<input type="hidden" name="right.id" value="${right.id!}">
+<ul class="forminfo">	
+		<li><label>权限编号</label>
+		<input type="text" class="dfinput" name="right.code" value="${right.code!}" datatype="s1-4" nullmsg="编号不能为空" errmsg="长度最多为四位"/>(最多四位)
+	</li>
+		<li><label>权限类型</label>
+		<div style="float:left">
+		<select name="right.type" datatype="*" id="type"  class="dfinput">
+			<option value="folder">根节点</option>
+			<option value="document">子节点</option>
+		</select>
+		</div>
+	</li>
+		<li><label>权限名称</label>
+		<input type="text" class="dfinput" name="right.text" value="${right.text!}" datatype="*" />
+	</li>
+	
+		<li><label>链接地址</label>
+		<input type="text" class="dfinput" name="right.url" value="${right.url!}" datatype="*" />(根节点请填写＃)
+	</li>
+	
+		<li><label>显示顺序 </label>
+		<input type="text" class="dfinput" name="right.rank" value="${right.rank!}" datatype="*" />(整数数字)
+	</li>
+	<li>
+	 <input type="button" value="返回"  class="btn" onclick="history.back()"/>
+	<input type="submit" value="保存"  class="btn btn-info"/>
+</li>
+</ul>
+</form>
+<script>
+$(function(){
+	
+	setTimeout(function(){
+		$("#type").val("${right.type!}");
+		$(".selector").find("option[value='"+${right.type!}+"']").attr("selected",true);
+	},500);
+	
+	$("#rightForm").Validform({
+		tiptype:3
+	});
+	
+	
+});
+</script>

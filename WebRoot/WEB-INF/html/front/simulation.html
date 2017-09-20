@@ -1,0 +1,43 @@
+@G_TITLE='文库'; 
+@ include("/front/common/_header.html",{"nav":"simulation","G_TITLE":G_TITLE!}) {}
+<style>
+.type-item-level2 { padding-left:30px;}
+.type-item-level3 { padding-left:45px;border-top-left-radius:0px;border-top-right-radius:0px;}
+.list-active { background-color:#f4f4f4;}
+.type-children { display:none;} 
+.cate-list label { text-decoration:underline;}
+</style>
+<!-- 文档分类 -->
+
+<div class="container">
+	<h3>实训列表</h3>
+      			@for(entry in maps!){
+      			 <a  val='${entry.value!}' href="javascript:void(0)"  style="padding:3px 8px;border:1px solid #ccc"  onclick='showItem(this)'>
+      			<label  style="cursor:pointer">${entry.key!}</label>
+      			</a>
+      			@}
+		       <hr style="margin:0px;"/>	
+			  <iframe id="simulationFrame" width="1024" height="900" src="${base}/simulation_welcome.html" scrolling="auto" frameborder="0"></iframe>
+</div>
+
+
+<script>
+
+	function showItem(obj) {
+		var path = $(obj).attr("val");
+		$("#simulationFrame").attr("src","${basePath!}"+path);
+	}
+	function autoHeight(){
+        var iframe = document.getElementById("simulationFrame");//这里括号内的"runtime"其实就是上面的ID，要改成自己上面填写的ID。
+        if(iframe.Document){//ie自有属性
+            iframe.style.height = iframe.Document.documentElement.scrollHeight;
+        }else if(iframe.contentDocument){//ie,firefox,chrome,opera,safari
+            iframe.height = iframe.contentDocument.body.offsetHeight ;
+        }
+    }
+	$(document).ready(function(){
+		
+	});
+</script>
+
+@ include("/front/common/_footer.html",{}) {}

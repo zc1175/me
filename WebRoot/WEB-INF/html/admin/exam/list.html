@@ -1,0 +1,180 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'测试平台',p2:'试卷管理'}) {}
+<div class="rightinfo">
+	 <div class="tools">
+    	<ul class="toolbar">
+             <li class="click"><span><img src="${base}/admin/images/t01.png" /></span><a href="${base}/admin/exam/add">添加试卷</a></li>
+             <li class="click"><span><img src="${base}/admin/images/t04.png" /></span><a href="${base}/admin/examCombo">试卷组合管理</a></li>
+        </ul>
+    </div>
+    
+    <form action="${base}/admin/exam" method="post" id="queryForm">
+    <table class="tablelist" style="margin-bottom:5px;">
+    		<tr>
+    			<td>筛选：
+    			考试分类：
+    			<select id="selExamType" name="exam.examTypeId">
+				 	<option value="-1">---不限---</option>
+				 	@for(examType in examTypeList!) {
+				 	<option value="${examType.id!}">${examType.name!}</option>
+				 	@}
+				 </select>
+				 试卷类型：
+    			<select id="selAnswerType" name="exam.answerType">
+				 	<option value="">---不限---</option>
+				 	<option value="testing">模考</option>
+				 	<option value="practice">练习</option>
+				 </select>
+				<label>名称：</label>
+			 	<input type="text" name="exam.name" value="${exam.name!}"  />
+			 	
+			 	<input type="submit" value="  查 询   " />
+			 	<input type="button" value="   清空查询条件    " onclick="clearQueryData()" />
+		    	
+		    	
+		    	</td>
+		    	
+		    	
+		    </tr>
+		    
+    </table>
+    </form>
+    <table class="tablelist">
+    	<thead>
+    		<tr>
+    			<th  width="12%">考试分类</th>
+    			<th  width="20%">试卷名</th>
+    			<th width="10%">总分及时长 </th>
+    			<th width="11%">开始时间</th>
+    			<th width="11%">结束时间</th>
+    			<th width="10%">状态</th>
+    			<th>操作</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	 @ for(exam in examPage.list!){
+    		<tr id="exam_${exam.id!}">
+    			<td class="textwrap">${exam.examTypeName!}</td>
+    			<td class="textwrap">${exam.name!}(共${exam.questionNum!}题)</td>
+    			<td class="textwrap">${exam.score!,numberFormat="##.#"}分-${exam.timeLength!}分钟 </td>
+    			<td class="textwrap">${exam.startTime!,"yyyy-MM-dd HH:mm"}</td>
+    			<td class="textwrap">${exam.endTime!,"yyyy-MM-dd HH:mm"}</td>
+    			<td class="textwrap">
+    			<span id="examPublish_${exam.id!}">${exam.publishedDes!}</span> 
+    			<span id="examCreate_${exam.id!}">${exam.createdDes!}</span></td>
+    			<td  class="textwrap">
+    			 @if(exam.published!false == false) {
+                 <a class="tablelink" href="javascript:void(0)" onclick="toPublish('${exam.id}',1)">发布</a>
+                 @}else{
+                 <a class="tablelink" href="javascript:void(0)" onclick="toPublish('${exam.id}',0)">取消发布</a>
+                 @}
+                 @if(exam.createType!'' != 'none') {
+    			 @if(exam.created!0 == 0) {
+    			 <a class="tablelink" href="javascript:;" onclick="examCreate('${exam.id!}')">生成</a>
+    			 @}else{
+    			 <a class="tablelink" href="javascript:;" onclick="examCreate('${exam.id!}')">重新生成</a>
+    			 @}
+    			 <a class="tablelink" href="${base}/admin/exam/question/${exam.id!}">试题</a>
+    			 <a class="tablelink" href="${base}/admin/exam/view/${exam.id!}">查看</a>
+    			 @}
+    			 <a class="tablelink" href="${base}/admin/exam/edit/${exam.id}">编辑</a>
+                 <a class="tablelink" href="javascript:void(0)" onclick="del(${exam.id})">删除</a>
+    			</td>
+    		</tr>
+    	 @ }
+    	</tbody>
+    </table>
+    
+    @ include("/common/_paginate.html",
+    @ {"currentPage":examPage.pageNumber!,"totalPage":examPage.totalPage,"actionUrl":"/admin/exam/index-"}) {}
+</div>
+
+<div id="loading" style="text-align:center;z-index:1000;position:absolute;display:none;width:300px;height:100px;border:1px solid #ccc;background:#f0f0f0;">
+	<div>不要关闭浏览器，正在处理，请稍等...</div>
+	<input type='button' value='关闭' style='display:none' id='btnClose' onClick='$("#loading").hide()'/>
+</div>
+
+<div class="modal fade" id="msgModal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <label class="modal-title" id="msgTitle">
+            </label>
+         </div>
+         <div class="modal-body" id="msgContent">
+         </div>
+      </div>
+	</div>
+</div>
+
+<script>
+function examCreate(examId) {
+	$("#msgTitle").html("提示");
+	$("#msgContent").html("不要关闭浏览器，正在处理，请稍等..");
+	$('#msgModal').modal();
+	$.getJSON("${base}/admin/exam/create/"+examId,{},function(ret){
+		if("success"==ret.result) {
+			location.href='${base}${actionUrl!}${examPage.pageNumber!1}'
+			/* $("#loading").hide();
+			$("#examCreate_"+examId).html("<font color=green>已生成</font>");
+			alert("试卷生成成功"); */
+		}else{
+			$("#btnClose").show();
+			$("#msgContent").html("试卷生成失败，原因："+ret.errMsg).css("color","red");
+		}
+		
+	});
+}
+
+function del(id) {
+	$("#msgTitle").html("提示");
+	$("#msgContent").html("不要关闭浏览器，正在处理，请稍等..");
+	$('#msgModal').modal();
+	$.getJSON("${base}/admin/exam/delete/"+id,{},function(ret){
+		if("success"==ret.result) {
+			$('#msgModal').modal('hide');
+			$("#exam_"+id).remove();
+		}else{
+			$("#msgContent").html("删除失败，原因："+ret.errMsg).css("color","red");
+		}
+	});
+}
+function toPublish(id,pub) {
+	$("#msgTitle").html("提示");
+	$("#msgContent").html("不要关闭浏览器，正在处理，请稍等..");
+	$('#msgModal').modal();
+	$.getJSON("${base}/admin/exam/publish/",{"examId":id,"published":pub},function(ret){
+		if("success"==ret.result) {
+			location.href='${base}${actionUrl!}${examPage.pageNumber!1}'
+			/* $("#loading").hide();
+			if(0 == pub) $("#examPublish_"+examId).html("<font color=green>已发布</font>");
+			else $("#examPublish_"+examId).html("<font color=red>未发布</font>"); */
+		}else{
+			$("#msgContent").html("试卷发布失败，原因："+ret.errMsg).css("color","red");
+		}
+	});
+}
+function clearQueryData() {
+	$("#queryForm input[type=text]").val("");
+	$("#queryForm select").val("-1");
+}
+$(document).ready(function(){
+	  $('.tablelist tbody tr:odd').addClass('odd');
+	  $("#selExamType").val("${exam.examTypeId!}")
+	  $("#selAnswerType").val("${exam.answerType!}")
+});
+function popup(popupName){ 
+	var _scrollHeight = $(document).scrollTop(),//获取当前窗口距离页面顶部高度 
+	_windowHeight = $(window).height(),//获取当前窗口高度 
+	_windowWidth = $(window).width(),//获取当前窗口宽度 
+	_popupHeight = popupName.height(),//获取弹出层高度 
+	_popupWeight = popupName.width();//获取弹出层宽度 
+	_posiTop = (_windowHeight - _popupHeight)/2 + _scrollHeight; 
+	_posiLeft = (_windowWidth - _popupWeight)/2; 
+	popupName.css({"left": _posiLeft + "px","top":_posiTop + "px","display":"block"});//设置position 
+}
+</script>

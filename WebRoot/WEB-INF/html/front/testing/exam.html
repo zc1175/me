@@ -1,0 +1,254 @@
+@G_TITLE=exam.title!;
+@ include("/front/common/_header.html",{"nav":"exam","G_TITLE":G_TITLE}) {}
+<link rel="stylesheet" type="text/css" href="${base}/ext/jqTransform/jqtransform.css" />
+<script type="text/javascript" src="${base}/ext/jqTransform/jquery.jqtransform.js"></script>
+<style>
+body { background:#fefefe;}
+.timer{ color:#000; width: 120px; padding:10px;margin:0px;margin-top:10px; font-size:16px;}
+.examcontent{background:#e1ecf3;padding-bottom:20px;}
+.examContent .nav,.examContent .question { float:left; }
+.examContent .nav { background:#edf4f8;height:500px; overflow-y:auto;overflow-x:hidden;}
+.examContent .nav { width:100%; padding:10px 5px; border-right:1px solid #e0e0e0;}
+.examContent .nav li { list-style:none;float:left;margin-left:5px; margin-top:5px; border:1px solid #ccc; padding:1px;width:25px;height:25px;text-align:center;line-height:25px;font-size:11px;}
+.examContent .nav li:hover { background:#e0e0e0;cursor:pointer; }
+.examContent .nav .item-container { padding: 5px 10px; background: white; margin: 5px 0px; font-size:12px; }
+.examContent .nav .item { padding: 2px 8px; }
+.examContent .nav .selected { border:1px solid #f7cda5;background:#fef1e2;}
+.examContent .nav .answered { border:1px solid #addd96;background:#dcf4d1}
+.examContent .nav .questionType { border-top:1px solid #fefefe;font-size:14px; font-weight:bold;width:100%;margin-top:10px;padding:10px 10px;font-family:'宋体';}
+.examContent .question {width:100%; padding-left:20px;}
+.examContent .question .ntitle { height:20px;border-bottom:1px solid #fefefe;font-size:14px;padding:10px 0px;font-family:'宋体'}
+.examContent .question .title {display:block;font-size:20px;padding:10px;font-family:'宋体';line-height:26px;}
+.examContent .question ul li { list-style:none;padding-left:10px;font-size:16px;line-height:30px;font-family:'宋体'}
+.examContent .question ul li input { margin-right:15px;}
+.examContent .question .questionContent { overflow-y:auto; overflow:x:hidden;width:100%;}
+.examContent .errMsg { font-size:14px; color:red; padding-top:5px;}
+.examContent .nav .title { clear:both; height:20px;font-size:14px;font-family:'宋体';padding-left:10px}
+.examContent .pager { width:100%;text-align:left;border-top:1px solid #fefefe;padding-top:5px;padding-right:20px;font-family:'宋体';float:right;}
+.examContent .pager button { cursor:pointer;font-size:12px;font-family:'宋体';padding:5px 15px; margin:0px 10px;}
+.panel { margin-bottom: 5px; }
+.panel-body { padding: 5px; }
+.panel-heading { padding: 5px 15px; }
+.jqTransformRadio { margin-right:10px; }
+.jqTransformCheckbox { margin-right:10px;}
+#footer { background:#f0f0f0;}
+</style>
+
+<div class="row" style="padding:15px 0px;margin-bottom:1px;background:#edf4f8;">
+	<div class="col-md-9 col-sm-8 col-xs-8 text-center">
+		<h3>${exam.examTypeName!} - ${exam.name!} </h3>
+	</div>
+	<div class="col-md-1 col-sm-1 col-xs-1 text-center" style="padding-top:0px">
+		<div class="timer well pull-right">
+			<span class="glyphicon glyphicon-bell"></span>
+			<span id="restTime">00:00:00</span>
+		</div>
+	</div>
+	<div class="col-md-1 col-sm-1 col-xs-1" style="padding-top:15px;padding-left:0px;">
+		<button class="btn btn-default" id="btnSubmit" onclick="submitExam()" style="width:80px">
+		<span class="glyphicon glyphicon-hand-right"></span>
+		 交 卷 </button> 
+	</div>
+</div>
+<div class="clearfix"></div>
+
+
+<div class="row examContent">
+	<div class="col-md-3 col-sm-4 hidden-xs">
+		<div class="nav text-center">
+			<div class="item-container">
+				<span class="item answered"></span> &nbsp;已答
+				<span class="item selected"></span> &nbsp;当前题目
+			</div>
+			<div class="clearfix"></div>
+			${examStructureHtml!}
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="col-md-9 col-sm-8 col-xs-12">
+		<div class="question">
+			<div class="ntitle"><img src="${base}/front/images/topic_edit.png" height="17px" align="top"/> 试题</div>
+			<div id="questionNumId" style="height:20px;padding:10px;font-size:18px;font-family:'宋体'">第1题</div>
+			<div id="questionContent" class="questionContent">正在读取试题...</div>
+			
+			<div class="clearfix"></div>
+			<div class="row">
+			<div class="pager">
+				<button id="prev">&lt;&lt;上一题</button>
+				<button id="next">下一题&gt;&gt;</button>
+			</div>
+			</div>
+			
+		    <div class="clearfix"></div>
+		    <div class="errMsg"></div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="msgModal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <label class="modal-title" id="msgTitle">提示
+            </label>
+         </div>
+         <div class="modal-body" id="msgContent">
+         正在提交，请稍等...
+         </div>
+      </div>
+</div>
+</div>
+<script>
+var examId = "${exam.id!}";
+var maxNum = "${exam.questionNum!0}"
+var timeLength = parseInt("${timeLeft!0}");
+var userAnswerId = parseInt("${session.userAnswer.id!0}");
+var curIndex = 0;
+var curNum=1;
+var curQeustionTypeId = 0;
+function loadQuestion() {
+	var curVal = $(".nav .option").eq(curIndex).attr("vid");
+	curQuestionTypeId = curVal.split('-')[0];
+	curNum=curVal.split('-')[1];
+	$("#questionContent").html("正在加载试题...");
+	$("#questionNumId").text("第" + (curIndex+1) + "题");
+	$(".nav .option").each(function(index,item){ $(item).removeClass("selected") });
+	$(".nav .option[vid='"+curQuestionTypeId+"-"+curNum+"']").addClass("selected");
+	var param = {"examId" : examId , "index" : curNum,"questionTypeId":curQuestionTypeId};
+	$.getJSON("${base}/question/getQuestionJsonByIndex",param,function(ret){
+		if("success" == ret.result) {
+			var html = ret.html;
+			html = html.replace("\\","");
+			$("#questionContent").html(html);	
+		}else{
+			$("#questionContent").html("加载试题出错，请刷新页面重试.");
+		}
+	});
+	checkBtn();
+	$(".errMsg").html("");
+}
+function saveAnswer(liObj) {
+	var obj = $(liObj);
+	setBtnEnabled(false);
+	var value = $(obj).val();
+	var questionId = value.split("_")[0];
+	var op = "";
+	if($(obj).attr("type") == 'radio') {
+		op =  'add';
+	}else {
+		if($(obj).prop("checked")) {
+			op = 'append';
+		}	else {
+			op = 'remove';
+		}
+	} 
+	if($(obj).attr("type") == 'radio') {
+		$(".examContent .nav ul li[vid='"+curQuestionTypeId+"-"+curNum+"']").addClass("answered");
+	}
+	var subId = value.split("_")[1];
+	var answer = value.split("_")[2];
+	var param = { "examId":examId,"questionId": questionId , "subId":subId, "answer" : answer,"num":curNum,"op":op};
+	$.getJSON("${base}/question/saveAnswer",param,function(ret){
+		if('error' == ret.result) {
+			$(".errMsg").html("保存失败，请重试！");
+			$(".examContent .nav ul li[vid='"+curQuestionTypeId+"-"+curNum+"']").removeClass("answered");
+		}else{
+			if($(obj).attr("type") == 'checkbox') {
+				$(".examContent .nav ul li[vid='"+curQuestionTypeId+"-"+curNum+"']").addClass("answered");
+			}
+		}
+	});
+	setBtnEnabled(true);
+}
+//检查是否至少有一个被选中
+function checkIsSelected() {
+	var ret = false;
+	$(".options input").each(function(index,item){
+		if($(item).prop("checked") == true) {
+			ret = true;
+		}
+	});
+	return ret;
+}
+function checkBtn() {
+	if(curNum==1) $("#prev").attr("disabled",true);
+	if(curNum<parseInt(maxNum)) $("#next").attr("disabled",false);
+	if(curNum>1) $("#prev").attr("disabled",false);
+	if(curNum==parseInt(maxNum)) $("#next").attr("disabled",true);
+}
+function submitExam() {
+	$("#btnSubmit").text("正在交卷...").attr("disabled",true);
+	$('#msgModal').modal({keyboard:false,backdrop:'static'});
+	clearInterval(timer);
+	location.href='${base}/testing/submit?userAnswerId='+userAnswerId;
+}
+function startTimer() {
+	if(timeLength == 180) {
+		clearInterval(timer);
+		//3分钟前提醒保存
+		alert('离考试结束，还有三分钟，请仔细核对作答是否保存！');
+		timer = setInterval(startTimer,1000);
+	}
+	timeLength--;
+	if(timeLength <= 0) {
+		//交卷
+		clearInterval(timer);
+		submitExam();		
+	}
+	var t = "";
+	if(timeLength>0) {
+		if(timeLength>60) {
+			t+=parseInt(timeLength/60)+":";
+		}
+		t+=(timeLength%60)+"";
+		$("#restTime").text(t);
+	}
+}
+function setBtnEnabled(bool) {
+	if(bool) {
+		$("#prev").attr("enabled",true);
+		$("#next").attr("enabled",true);
+	}else{
+		$("#prev").attr("enabled",false);
+		$("#next").attr("enabled",false);
+	}
+}
+function logout() {
+	location.href='${base}/user/logout?returnUrl=/testing';	
+}
+$(function(){
+	$(".nav li").each(function(index,item){
+		$(item).click(function(){
+			curIndex = parseInt($(this).text())-1;
+			loadQuestion();
+		});
+	});
+	$("#prev").attr("disabled",true);
+	$("#prev").click(function(){
+		if(curIndex>0) {
+			curIndex--;
+			loadQuestion();
+		}else{
+			$("#prev").attr("disabled",true);
+		}
+		checkBtn();
+	});
+	$("#next").click(function(){
+		if(curIndex<parseInt(maxNum)-1) {
+			curIndex++;
+			loadQuestion();
+		}else {
+			$("#prev").attr("disabled",false);
+			$("#next").attr("disabled",true);
+		}
+		checkBtn();
+	});
+	
+	loadQuestion();
+	timer = setInterval(startTimer,1000);
+	
+	
+});
+</script>
+
+<div class="clear"></div>
+@ include("/front/common/_footer.html",{}) {}

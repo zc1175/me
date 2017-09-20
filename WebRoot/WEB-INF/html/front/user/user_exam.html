@@ -1,0 +1,39 @@
+
+	@ include("/front/user/_left.html",{"item":"exam"}) {}
+
+	<div class="col-md-9 col-sm-9 col-xs-8">
+	
+		<table class="table table-striped">
+			<thead>
+				<th width="50%">考试名称</th>
+				<th width="20%">考试时间</th>
+				<th width="15%">得分</th>
+				<th>操作</th>
+			</thead>
+			<tbody>
+			@for(ua in examPage.list) {
+			<tr>
+				<td>${ua.exam.name!}</td>
+				<td>${ua.startTime,"yyyy-MM-dd HH:mm"}</td>
+				<td>${ua.score!}</td>
+				<td>
+				<a href="${base}/user/center/examdetail?id=${ua.id!}&item=exam">查看</a>
+				<a href="${base}/user/center/examquestion?id=${ua.id!}&item=exam">错题</a>
+				</td>
+			</tr>
+			@}
+			</tbody>
+		</table>
+		
+		@ include("/common/_paginate_.html",
+  		@ {"currentPage":examPage.pageNumber,"totalPage":examPage.totalPage}) {}
+  			 
+	</div>
+
+</div>
+<script>
+function go2Page(p) {
+	location.href="?p="+p;
+}
+</script>
+@ include("/front/common/_footer.html",{}) {}

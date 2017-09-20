@@ -1,0 +1,31 @@
+@G_TITLE=news.title! + '-' + category.name + '-资讯'; 
+@include("/front/common/_header.html",{"nav":"news","G_TITLE":G_TITLE}) {}
+
+<div class="container">
+	<div>
+		<h5>
+		当前位置：<a href="${base}/news">资讯</a> &gt; <a href="${base}/news/c/${category.pid!}">${category.name!}</a> 
+		</h5>
+		<hr style="border-style:dotted;"/>
+	</div>
+
+	@for(news in newsPage.list!) {
+	<div class="row" style="margin-top:15px;">
+		<div class="col-md-10 col-xs-9">
+		· <a href="${news.linkUrl!}" target="_blank">${news.titleStr!}</a>
+		</div>
+		<div class="col-md-2 col-xs-3">
+		${news.createTime!,"yyyy-MM-dd"}
+		</div>
+	</div>
+	@}
+	
+	<div style="height:30px"></div>
+	<div class="row" style="margin-left:0px;margin-top:10px;text-align:center;margin:0px auto;">
+      	 @ include("/common/_paginate_.html",
+  		 @ {"currentPage":newsPage.pageNumber,"totalPage":newsPage.totalPage}) {}
+    </div>
+	
+</div>
+
+@ include("/front/common/_footer.html",{}) {}

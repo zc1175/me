@@ -1,0 +1,47 @@
+@G_TITLE=news.title! + '-' + news.category.name + '-资讯'; 
+@include("/front/common/_header.html",{"nav":"news","G_TITLE":G_TITLE}) {}
+
+<div class="container">
+	<div>
+		<h5>
+		当前位置：<a href="${base}/news">资讯</a> &gt; <a href="${base}/news/c/${news.category.pid!}">${news.category.name!}</a> 
+		</h5>
+	</div>
+
+	<div class="row">
+	<div class="col-md-10 col-xs-12">
+		<div class="text-center">
+			<h3>
+			 ${news.title!}</h3>
+			<label><small>
+			浏览:${news.clickCount!0}次
+			&nbsp;&nbsp;
+			来源:${news.source!'暂无'}
+			&nbsp;&nbsp;
+			作者:${news.author!'暂无'}
+			</small></label>
+		</div>
+		<div style="margin-top:20px">
+		${news.content!}
+		</div>
+	</div>
+	<div class="col-md-2 hidden-xs" >
+		<div style="height:80px"></div>
+		
+		<h5>
+		<span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
+		相关资讯</h5>
+		
+		@for(news in relatedNews!) {
+		<div class="row" style="padding-top:5px;">
+			<div class="col-md-12">
+		     <a href="${base}/news/view/${news.pid!}">${strutil.length(news.title!)>14?strutil.subStringTo(news.title,0,14)+'...':news.title}</a>
+		     </div>
+		</div>
+		@}
+
+	</div>
+	</div>
+</div>
+
+@ include("/front/common/_footer.html",{}) {}

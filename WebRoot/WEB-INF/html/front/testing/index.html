@@ -1,0 +1,138 @@
+@G_TITLE='模考';
+@ include("/front/common/_header.html",{"nav":"exam","G_TITLE":G_TITLE!}) {}
+<style>
+.type-item-level2 { padding-left:30px;}
+.type-item-level3 { padding-left:45px;border-top-left-radius:0px;border-top-right-radius:0px;}
+.list-active { background-color:#f4f4f4;}
+.type-children { display:none;}  
+.type-item { padding:0px 10px;color:#888;}
+</style>
+<div style="height:15px"></div>
+<div class="container">
+	
+	<div class="row">
+		<!-- 科目列表 -->
+		<div class="col-md-3 col-sm-3 hidden-xs">
+			<div class="cate-list">
+      			<a href="javascript:s('examTypeId','-1')" class="list-group-item" style="background-color:#f0f0f0;">
+      			<label style="cursor:pointer" onclick="javascript:s('examTypeId','-1')">全部试题</label>
+      			</a>
+      			@for(examType in examTypeList!){
+      			<a dtype="examType" val='${examType.id!}' href="javascript:void(0)" class="list-group-item">
+      			<label  style="cursor:pointer" onclick="javascript:s('examTypeId','${examType.id!}')">${examType.name!}</label></a>
+      			@}
+      		</div>
+	  	</div>
+		<!-- //科目列表 -->
+		
+		<div class="col-md-9 col-sm-9 col-xs-12">
+	    	<div style="display:none;background-color:#f0f0f0;border:1px solid #e0e0e0;padding:5px;margin-bottom:5px;">
+			<label><small>时间&nbsp;</small></label>
+			<button dtype="time" val="-1" type="button" class="btn btn-sm btn-link" onclick="s('time',-1)">全部 <span class="badge"></span></button>
+			<button dtype="time" val="3" type="button" class="btn btn-sm btn-link" onclick="s('time',3)">近三天 <span class="badge"></span></button>
+			<button dtype="time" val="7" type="button" class="btn btn-sm btn-link" onclick="s('time',7)">近一周 <span class="badge"></span></button>
+			<button dtype="time" val="31" type="button" class="btn btn-sm btn-link" onclick="s('time',31)">近一个月 <span class="badge"></span></button>
+			</div>
+			
+			<h4 class="text-primary"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span> 模考题库列表</h4>
+			<br/>
+			@if(isEmpty(examPage.list!)) {
+				<p class="text-center">题库当前为空</p> 
+			@}
+			
+			@for(exam in examPage.list!) {
+			<div class="row" style="background:#fff;margin:0px;margin-top:3px;padding:20px 10px;">
+				<div class="col-md-10 col-sm-10 col-xs-10">
+					<p><a style="font-size:18px;" href="javascript:void(0)">${exam.name!}</a></p>
+					<label style="color:#666;font-weight:normal;">
+					总分：${exam.score!}分
+						&nbsp;&nbsp;
+						题数：${exam.questionNum!}
+						&nbsp;&nbsp;
+						@if(exam.answerType=='testing') {
+						考试时长：${exam.timeLength!0,numberFormat="##.#"}分钟
+						@}
+					</label>
+				</div>
+				<div class="col-md-2 col-sm-2 col-xs-12">
+					@if('testing' == exam.answerType! && true == exam.answered!false && true == exam.answerSubmit!false) {
+						已参加
+					@}else{
+					<button class="btn btn-default" onclick="goExam('${exam.pid!}')">	
+						@if('testing' == exam.answerType) {
+							${ true == exam.answered!false ? '继续考试' :'开始考试'}
+						@}else{
+							${ true == exam.answered!false ? '继续答题' :'开始练习'}
+						@}
+					</button>
+					@}
+				</div>
+			</div>
+			@}
+			<div class="row" style="margin-left:0px;text-align:center;margin:0px auto;">
+			@ include("/common/_paginate_.html",
+			@ {"currentPage":examPage.pageNumber,"totalPage":examPage.totalPage,"actionUrl":actionUrl!}) {}
+			</div>
+      	</div>
+	</div>
+</div>
+
+<div class="modal fade" id="msgModal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <label class="modal-title" id="msgTitle">
+            </label>
+         </div>
+         <div class="modal-body" id="msgContent">
+         </div>
+      </div>
+	</div>
+</div>
+
+<form action="${base}/testing" method="get" id="examForm">
+<input type="hidden" name="examTypeId" id="examTypeId" value="${examTypeId!}" />
+<input type="hidden" name="time" id="time" value="${time!}"/>
+<input type="hidden" name="pageNo" id="pageNo" value="1"/>
+</form>
+
+
+<script>
+function s(type,val) {
+	$("#"+type).val(val);
+	$("#examForm").submit();
+}
+function go2Page(p) {
+	$("#pageNo").val(p);
+	$("#examForm").submit();
+}
+function logout() {
+	location.href='${base}/user/logout?returnUrl=/testing';
+}
+function goExam(id) {
+	$("#msgTitle").html("提示");
+	$("#msgContent").html("正在读取试题，请稍等...");
+	$('#msgModal').modal({keyboard:false,backdrop:'static'});
+	location.href="${base}/testing/exam/"+id;
+}
+$(document).ready(function(){
+	var examTypeId = "${examTypeId!}";
+	var time = "${time!}"
+	$("[dtype='examType']").each(function(index,item){
+		if($(item).attr("val")==examTypeId) {
+			$(item).addClass("list-active");
+		}else{
+			$(item).removeClass("btn-default");
+		}
+	});
+	$("[dtype='time']").each(function(index,item){
+		if($(item).attr("val")==time) {
+			$(item).addClass("btn-default");
+		}else{
+			$(item).removeClass("btn-default");
+		}
+	});
+});
+</script>
+
+@ include("/front/common/_footer.html",{}) {}

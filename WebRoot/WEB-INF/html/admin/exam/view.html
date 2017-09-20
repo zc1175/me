@@ -1,0 +1,100 @@
+@ include("/common/_header.html",{}) {}
+@ include("/common/_position.html",{p1:'试卷详情'}) {}
+<style>
+.info { font-size:14px;font-weight:bold; margin:5px;}
+.readonly { border-bottom:1px solid #ccc;font-size:16px;}
+.examContent {margin-top:15px;padding-left:20px;border:1px solid #ccc;margin:5px;padding-bottom:20px;}
+.examContent .questionType { font-size:14px;font-weight:bold;padding-top:15px;}
+.examContent .questionList { padding-left:30px;}
+.examContent .questionList .title,.examContent .questionList .title font { font-size:14px;font-weight:bold;}
+.examContent .questionList .optionList  { margin-top:15px; font-size:14px;}
+</style>
+<div style="margin:5px;">
+<input type="button" onclick="history.back()" class="btn btn-info" value="返回"></input>
+<input type="button" onclick="exportWord()" class="btn btn-info" value="导出为WORD"></input>(目前只适用于IE内核浏览器<a href="${base}/help/export_word.html" target="_blank">导出帮助</a>)
+</div>
+<div id="content">
+<div style="padding:5px 20px;border:1px solid #ccc;margin:5px;">
+	 <div  class="info">
+	 试卷名称：<label class="readonly">${exam.name!}</label> 
+	 &nbsp;&nbsp;
+	 总分：<label class="readonly">${exam.score!,numberFormat="##.#"}分</label> 
+	  &nbsp;&nbsp;
+	  总时间：<label class="readonly">${exam.timeLength!}分钟</label> 
+    </div>
+</div>
+<div class="examContent">
+@var num = 1;
+@for(entry in structure!) {
+@var comboDetail = entry.key;
+@var questionList = entry.value;
+	<div class="questionType">${comboDetail.questionTypeName!}(共${comboDetail.questionNum!}题，每题${comboDetail.unitScore!,numberFormat="##.#"}分)</div>
+	<div class="questionList">
+	@for(question in questionList!) {
+		<div class="title" style="margin-top:15px;">${num!}.  ${question.title!}</div>
+		<div class="optionList">
+		@for(sub in question.subs!) {
+			<div class="title">${sub.title!} </div>
+			A. ${sub.optiona!}<br/>			
+			B. ${sub.optionb!}<br/>			
+			@if(!isEmpty(sub.optionc!) ) {
+				C. ${sub.optionc!}<br/>
+			@}			
+			@if(!isEmpty(sub.optiond!)) {
+				D. ${sub.optiond!}<br/>
+			@}		
+			@if(!isEmpty(sub.optione!)) {	
+				E.${sub.optione!}<br/>		
+			@}
+			@if(!isEmpty(sub.optionf!)) {	
+				F. ${sub.optionf!}<br/>
+			@}
+			@num++;			
+		@}
+		</div>
+	@}
+	</div>
+@}
+</div>
+</div>
+<script>
+function getExportPath() {  
+    var shell = new ActiveXObject("Shell.Application");  
+    var folder = shell.BrowseForFolder(0, '请选择存储目录', 0x0040, 0x11);   
+    var filePath;  
+    if(folder != null) {  
+         filePath = folder.Items().Item().Path;  
+    }  
+    return filePath;  
+} 
+function exportWord() {
+	var fileName = "${exam.name!}-${user.name!}.doc";
+	var filePath = getExportPath();  
+    if(filePath != null) {  
+        try {  
+            var word = new ActiveXObject("Word.Application");  
+            var doc = word.Documents.Add("", 0, 1);  
+            var range = doc.Range(0, 1);  
+            var sel = document.body.createTextRange();  
+            try {  
+                sel.moveToElementText(document.getElementById("content"));  
+            } catch (notE) {  
+                alert("导出数据失败，没有数据可以导出。");  
+                window.close();  
+                return;  
+            }  
+            sel.select();  
+            sel.execCommand("Copy");  
+            range.Paste();  
+            //word.Application.Visible = true;// 控制word窗口是否显示  
+            doc.saveAs(filePath + "/"+fileName);// 保存  
+            alert("导出成功");  
+        } catch (e) {  
+            alert("导出数据失败，需要在客户机器安装Microsoft Office Word(不限版本)，将当前站点加入信任站点，允许在IE中运行ActiveX控件。");  
+        } finally {  
+            try {word.quit();} catch (ex) {}  // 关闭word窗口
+        }  
+    }  
+	
+}
+</script>
